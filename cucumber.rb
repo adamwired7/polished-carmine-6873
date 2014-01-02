@@ -7,11 +7,11 @@ class Cucumber
     @fail_count = 0
     @variables = Array.new
     @insert_value = Array.new
-    @instruments_trace = "automation/r1_photo_effects.trace"
-    @instruments_udid = ARGV.first#"2d95ed1f4d56b6c769bebda9ba49f30cc25773d7"
+    @instruments_app = ARGV[0]
+    @instruments_udid = ARGV[1]
     @instruments_script = "effectScript.js"
-    @instruments_results = "effects.txt"
-    @instruments_app = "Demo"
+    @instruments_results = "effects.txt" 
+    @instruments_trace = "automation/r1_photo_effects.trace"
     @instruments_template = "automation/r1_photo_effects"
     @instruments_results_path = "automation/data"
     @instruments_header = "automation/helpers/effects_header.js"

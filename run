@@ -1,5 +1,12 @@
 #!/bin/bash
+for_app=$1
 cudid=0
+
+if [[ -z "$for_app" ]]; then
+  echo "You did not specify an app name."
+  echo "./run [ app_name ]"
+  exit
+fi
 
 echo "Making sure we have a connection to a device...We can wait forever here..."
 while [ $cudid -eq 0 ]
@@ -10,7 +17,6 @@ do
 done
 
 udid=${udid// /}
-echo "Device connected: $udid"
-echo "Starting automation"
+echo "Starting automation for $for_app on $udid"
 
-ruby cucumber.rb $udid
+ruby cucumber.rb $for_app $udid
