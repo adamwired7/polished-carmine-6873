@@ -1,4 +1,4 @@
-test/automation/data/*
+automation/data/*
  *.trace
 effects.txt
 effectScript.js
