@@ -3,12 +3,12 @@ ConfidentQA Cucumber for iOS
 
 ### About
 
-This project leverages Behavior Driven Development (BDD) for ios automation testing with Instruments (XCode).
+This project leverages Behavior Driven Development (BDD) for ios automation testing with Instruments (XCode).  Use of this project assumes familiarity with the Instruments automation tool.
 
 
 ### How-To
 
-`./run` will run the script for all features outlined in the features directory.  
+`./run APP_NAME` will run the script for all features outlined in the features directory.  The command requires the app name.  You should have debug access to the app.
 
 ### Setup
 
@@ -17,7 +17,7 @@ For each feature, create a .feature file in the features directory.  Explain the
 Each feature should be explained in more detail on the following lines using a behavior-driven explanation for the business value.
 
      Feature: Crop
-          In order to reformat my image·
+          In order to reformat my image
           As someone who has taken a photo or selected a photo from the gallery
           I want to be able to crop my image
           
@@ -37,7 +37,7 @@ Once the feature has been explained, write scenarios for that feature.  Start ea
                
 For each feature, create a {feature}_steps.rb file in the step_definitions directory [ within the features directory ].
 
-Create step definitions that match each line/step in the scenario with the following syntax.
+Create step definitions that match each line/step in the scenario with the following javascript method:
 
      Given("{STEP}", function() {
           {JAVASCRIPT}
