@@ -1,4 +1,5 @@
 automation/data/*
+automation/r1_photo_effects.trace/*
  *.trace
 *.run
 effects.txt
