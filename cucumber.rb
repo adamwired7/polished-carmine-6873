@@ -5,8 +5,11 @@ class Cucumber
     @test_count = 0
     @line_count = -1
     @fail_count = 0
+    @current_test = ""
     @variables = Array.new
     @insert_value = Array.new
+    @failures = Array.new
+    @failure_detail = Array.new
     @instruments_app = ARGV[0]
     @instruments_udid = ARGV[1]
     @instruments_script = "effectScript.js"
@@ -47,6 +50,10 @@ class Cucumber
       puts "    <<PASS>>"
     else
       puts "    <<FAIL>>"
+      cmdc="grep -i 'Fail' #{@instruments_results} | cut -d':' -f 4"
+      resc=%x(#{cmdc})
+      @failures.push @current_test
+      @failure_detail.push resc
       @fail_count = @fail_count + 1
     end
 
@@ -69,6 +76,7 @@ class Cucumber
             run_test
           end
           puts "\n  #{line}"
+          @current_test = "#{feature} / #{line}"
           %x(echo '#import "#{@instruments_header}"' > #{@instruments_script})
           @scenario_test_count = @scenario_test_count + 1
           @test_count = @test_count + 1
@@ -127,7 +135,17 @@ class Cucumber
     run_test
     ended_at = Time.now
     run_time = ended_at - started_at
-    puts "\n\nTests: #{@test_count}\nFailures: #{@fail_count}"
+
+    if @failures.length > 0
+      puts "\n\nFailures:"
+      @failures.each_with_index { | failure, index |
+        puts failure
+        puts "- #{@failure_detail[index]}"
+      }
+    end
+
+    puts "\nScenarios: #{@scenario_test_count}"
+    puts "Steps: #{@test_count}\nFailures: #{@fail_count}"
     puts "#{run_time} seconds"
   end
 end
