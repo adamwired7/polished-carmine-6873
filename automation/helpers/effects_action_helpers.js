@@ -35,3 +35,12 @@ function expect_equal(a,b){
     UIALogger.logFail("EXPECT_EQUAL");
   }
 }
+
+function expect_valid(a){
+  if(a.checkIsValid()){
+    UIALogger.logPass("EXPECT_VALID");
+  }
+  else {
+    UIALogger.logFail("EXPECT_VALID");
+  }
+}

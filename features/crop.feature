@@ -6,10 +6,9 @@ Feature: Crop
   Scenario: Normal crop
     Given I have entered the SDK
     When I select "Normal" crop 2 times
-    And I select "Custom" crop 2 times
-    Then the "Custom" crop button should display a down state
+    Then the "Normal" crop button should display a down state
 
-  Scenario: Custom Crop
+  Scenario: Custom crop then normal crop
     Given I have entered the SDK
     When I select "Custom" crop 2 times
     And I select "Normal" crop 2 times
