@@ -1,8 +1,6 @@
 confidentqa_cucumber_ios
 ========================
 
-ConfidentQA Cucumber for iOS
-
 ### About
 
 This project leverages Behavior Driven Development (BDD) for ios automation testing with Instruments (XCode).
@@ -10,7 +8,7 @@ This project leverages Behavior Driven Development (BDD) for ios automation test
 
 ### How-To
 
-`ruby cucumber.rb` will run the script for all features outlined in the features directory.  
+`./run` will run the script for all features outlined in the features directory.  
 
 ### Setup
 
@@ -60,7 +58,9 @@ Regular expressions allow for shared use of step definitions.  For instance, the
           expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
      });
      
-A couple build in validations exist:
+
+A couple built in validations exist:
 
 - expect_equal(a,b) - compare the value of two things
 - expect_valid(a) - validate whether an object exists
+
