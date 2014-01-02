@@ -1,3 +1,4 @@
 test/automation/data/*
+ *.trace
 effects.txt
 effectScript.js
