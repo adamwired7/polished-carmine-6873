@@ -44,3 +44,12 @@ function expect_valid(a){
     UIALogger.logFail("EXPECT_VALID");
   }
 }
+
+function expect_visible(a){
+  if(a.isVisible()==1){
+    UIALogger.logPass("EXPECT_VISIBLE");
+  }
+  else {
+    UIALogger.logFail("EXPECT_VISIBLE");
+  }
+}
