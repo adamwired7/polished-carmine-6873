@@ -1,4 +1,4 @@
-confidentqa_cucumber_ios
+ConfidentQA Cucumber for iOS
 ========================
 
 ### About
