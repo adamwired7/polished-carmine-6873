@@ -3,7 +3,7 @@ ConfidentQA Cucumber for iOS
 
 ### About
 
-This project leverages Behavior Driven Development (BDD) for ios automation testing with Instruments (XCode).  Use of this project assumes familiarity with the Instruments automation tool.
+This project leverages Behavior Driven Development (BDD) for ios automation testing with Instruments (XCode).  Use of this project assumes familiarity with the Instruments UIAutomation tool.  The Instruments UIAutomation API can be found here: https://developer.apple.com/library/ios/documentation/DeveloperTools/Reference/UIAutomationRef/UIAutomationRef.pdf
 
 
 ### How-To
@@ -62,5 +62,6 @@ Regular expressions allow for shared use of step definitions.  For instance, the
 A couple built in validations exist:
 
 - expect_equal(a,b) - compare the value of two things
-- expect_valid(a) - validate whether an object exists
+- expect_valid(a) - validate whether an object exists or not
+- expect_visible(a) - validate whether an object is visible or not
 
