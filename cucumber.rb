@@ -41,6 +41,7 @@ class Cucumber
 
   def run_test
     now = Time.new().to_i
+    %x([ -d #{@instruments_results_path} ] || mkdir #{@instruments_results_path})
     %x(mkdir #{@instruments_results_path}/#{now})
     cmd="instruments -D #{@instruments_trace} -w #{@instruments_udid} -t #{@instruments_template} #{@instruments_app} -e UIASCRIPT #{@instruments_script} -e UIARESULTSPATH #{@instruments_results_path}/#{now}/ > #{@instruments_results}"
     %x(#{cmd})
