@@ -1,4 +1,4 @@
-Cucumber for iOS
+Cucumber-Style BDD for iOS
 ========================
 
 ### About
