@@ -27,9 +27,6 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
   UiObject settingsApp = appViews.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),"Photo Effects Demo");
   settingsApp.clickAndWaitForNewWindow();
 
-  UiObject demoValidation = new UiObject(new UiSelector().packageName("com.radiumone.r1sdkdemo"));
-
-  assertTrue("Unable to detect Photo Demo App",demoValidation.exists());
 
   UiObject nextImage = new UiObject(new UiSelector().text("Next Image"));
 
@@ -43,3 +40,22 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
 
 }
 
+
+//When("I select (.*) crop 2 times")
+public void selectCrop(int wCrop) throws UiObjectNotFoundException, InterruptedException {
+
+  int wCrop = 0;
+  String[] mode;
+  mode = new String[5];
+  mode[0] = "Normal Crop";
+  mode[1] = "Square Crop";
+  mode[2] = "Custom Crop";
+  mode[3] = "3x2 Crop";
+  mode[4] = "3x5 Crop";
+
+  UiObject cropMode = new UiObject(new UiSelector().description(mode[wCrop]));
+  cropMode.click();
+
+  screenShot("crop_button_" + mode[wCrop]);
+
+}

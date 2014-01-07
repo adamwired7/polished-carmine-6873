@@ -28,6 +28,7 @@ public class Testing extends UiAutomatorTestCase {
   public void screenShot(String ofwhat) {
     long currentTime = System.currentTimeMillis() / 1000L;
     ofwhat = ofwhat.replaceAll("\\s","");
+    System.out.println("/mnt/sdcard/Pictures/automation/" + currentTime + "_" + ofwhat + ".png");
     File storePath = new File("/mnt/sdcard/Pictures/automation/" + currentTime + "_" + ofwhat + ".png");
     getUiDevice().takeScreenshot(storePath);
   }

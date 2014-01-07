@@ -23,6 +23,12 @@ class Cucumber
     @uiautomator_script = "automation/src/com/example/qa_demo/Testing.java"
     @uiautomator_test_template = "automation/Testing.java"
     @build_test = ""
+
+    @on_ios=true
+    if @platform == "android"
+      @on_ios = false
+    end
+
   end
 
   def reg_is a, b
@@ -48,29 +54,103 @@ class Cucumber
     now = Time.new().to_i
     %x([ -d #{@instruments_results_path} ] || mkdir #{@instruments_results_path})
     %x(mkdir #{@instruments_results_path}/#{now})
-    if @platform == "ios"
+    if @on_ios
       cmd="instruments -D #{@instruments_trace} -w #{@instruments_udid} -t #{@instruments_template} #{@instruments_app} -e UIASCRIPT #{@instruments_script} -e UIARESULTSPATH #{@instruments_results_path}/#{now}/ > #{@instruments_results}"
+      %x(#{cmd})
+
+      cmdb="grep -i 'Pass' #{@instruments_results} | cut -d' ' -f 4"
+      res=%x(#{cmdb})
+      if res.include? "Pass"
+        puts "    <<PASS>>"
+      else
+        puts "    <<FAIL>>"
+        cmdc="grep -i 'Fail' #{@instruments_results} | cut -d':' -f 4"
+        resc=%x(#{cmdc})
+        @failures.push @current_test
+        @failure_detail.push resc
+        @fail_count = @fail_count + 1
+      end
     else
       cmd="echo '}' >> #{@uiautomator_script}"
+      %x(#{cmd})
+      cmd="adb shell rm -r /mnt/sdcard/Pictures/automation/ || true; adb shell mkdir /mnt/sdcard/Pictures/automation || true;"
       %x(#{cmd})
       cmd="cd #{@uiautomator_test_directory}; ant build; adb push bin/testing.jar /data/local/tmp/"
       %x(#{cmd})
       cmd="adb shell uiautomator runtest testing.jar #{@build_test} > #{@instruments_results}"
-    end
-    %x(#{cmd})
-    cmdb="grep -i 'Pass' #{@instruments_results} | cut -d' ' -f 4"
-    res=%x(#{cmdb})
-    if res.include? "Pass"
-      puts "    <<PASS>>"
-    else
-      puts "    <<FAIL>>"
-      cmdc="grep -i 'Fail' #{@instruments_results} | cut -d':' -f 4"
-      resc=%x(#{cmdc})
-      @failures.push @current_test
-      @failure_detail.push resc
-      @fail_count = @fail_count + 1
-    end
+      %x(#{cmd})
+      cmd="adb pull /mnt/sdcard/Pictures/automation/ #{@instruments_results_path}/#{now}/"
+      %x(#{cmd})
 
+      cmdb="grep -i 'Failures:' #{@instruments_results} | cut -d' ' -f 6"
+      res=%x(#{cmdb})
+      cmdb="grep -i 'Errors:' #{@instruments_results} | cut -d' ' -f 9"
+      resb=%x(#{cmdb})
+      if res[0].to_i == 0 && resb.to_i == 0
+        puts "    <<PASS>>"
+      else
+        puts "    <<FAIL>>"
+        if res[0].to_i > 0
+          cmdc="grep -i 'Failure in' #{@instruments_results} | cut -d' ' -f 3"
+        else
+          cmdc="grep -i 'Error in' #{@instruments_results} | cut -d' ' -f 3"
+        end
+        resc=%x(#{cmdc})
+        @failures.push @current_test
+        @failure_detail.push resc
+        @fail_count = @fail_count + 1
+      end
+    end
+  end
+
+  def splitParams function_variables
+    if function_variables.include? ","
+      @variables = function_variables.split(",")
+    else
+      @variables[0] = function_variables
+    end
+  end
+
+  def lineHandler lineb, to_end
+
+    included = false
+    if @on_ios
+      if lineb.include? "function"
+        included = true
+      end
+    else
+      if lineb =~ /(.*)Given(.*)/ || lineb =~ /(.*)When(.*)/ || lineb =~ /(.*)Then(.*)/
+        included = true
+      end
+    end
+    if included
+      if @line_count != 0
+        to_end=false
+        @line_count=-1
+      else
+        function_variables = ""
+        if @on_ios
+          function_variables = lineb[/function\(([^)]+)\)/].to_s
+        else
+          if lineb.include? "public"
+            function_variables = lineb[/\(([^)]+)\)/].to_s
+            method = lineb.split("(")[0].split(" ")
+            method=method[method.length-1]
+            @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}'"
+          end
+        end
+        if function_variables.length > 0
+          if @on_ios
+            function_variables = function_variables[9..-2]
+          else
+            function_variables = function_variables[1..-2]
+          end
+          splitParams function_variables
+        end
+        to_end = true
+      end
+    end
+    return to_end
   end
 
   def scenarios 
@@ -114,42 +194,11 @@ class Cucumber
             end
 
             if @line_count > -1
-              if @platform == "ios"
-                # function
-                if lineb.include? "function"
-                  if @line_count != 0
-                    to_end=false
-                    @line_count=-1
-                  else
-                    function_variables = lineb[/function\(([^)]+)\)/].to_s
-                    if function_variables.length > 0
-                      function_variables = function_variables[9..-2]
-                      if function_variables.include? ","
-                        @variables = function_variables.split(",")
-                      else
-                        @variables[0] = function_variables
-                      end
-                    end
-                    to_end = true
-                  end
-                end
-              else
-                if lineb =~ /(.*)Given(.*)/ || lineb =~ /(.*)When(.*)/ || lineb =~ /(.*)Then(.*)/
-                  if @line_count != 0 
-                    to_end=false
-                    @line_count=-1
-                  else
-                    to_end = true
-                  end
-                end
-                if lineb =~ /(.*)void(.*)/
-                  method = lineb.split("(")[0].split(" ")
-                  method=method[method.length-1]
-                  @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}'"
-                end
-              end
+
+              to_end=lineHandler lineb, to_end
+
               if to_end
-                if @platform == "ios"
+                if @on_ios
                   cmd = "echo '#{lineb}' >> '#{@instruments_script}'"
                   %x(#{cmd})
                   if @variables.length > 0
@@ -164,7 +213,6 @@ class Cucumber
                 @line_count=@line_count+1
               end
             end
-
           end
           fileb.close
         end
