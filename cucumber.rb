@@ -159,12 +159,12 @@ class Cucumber
 
   def scenarios 
     started_at = Time.now
-    Dir.glob("#{@platform}/features/*.feature") do |rb_file|
+    Dir.glob("features/*.feature") do |rb_file|
       @scenario_test_count = 0
       if @test_count > 0
         run_test
       end
-      feature = rb_file.split(".")[0].split("/")[2]
+      feature = rb_file.split(".")[0].split("/")[1]
       puts "\nFeature: #{feature}"
       file = File.new(rb_file,"r")
       while (line = file.gets)
@@ -185,7 +185,7 @@ class Cucumber
 
         if line.length > 4
 
-          fileb = File.new("#{@platform}/features/step_definitions/#{feature}_steps.rb","r")
+          fileb = File.new("features/step_definitions/#{feature}_steps.rb","r")
           while (lineb = fileb.gets)
             lineb_title = lineb.split('"')[1]
             if !lineb_title.nil? && lineb_title.length > 4
