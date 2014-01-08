@@ -73,10 +73,10 @@ A couple built in validations exist:
 
 Create step definitions that mach each line/step in the scenario with the following java format:
 
-//Given("{STEP}")
-public void methodName() throws UIUiObjectNotFoundException, InterruptedException {
-  {JAVA}
-}
+    //Given("{STEP}")
+    public void methodName() throws UIUiObjectNotFoundException, InterruptedException {
+        {JAVA}
+    }
 
 Here's a real example:
 
