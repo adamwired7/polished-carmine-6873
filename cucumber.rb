@@ -23,6 +23,7 @@ class Cucumber
     @uiautomator_script = "automation/src/com/example/qa_demo/Testing.java"
     @uiautomator_test_template = "automation/Testing.java"
     @build_test = ""
+    @to_end = false
 
     @on_ios=true
     if @platform == "android"
@@ -41,11 +42,15 @@ class Cucumber
     return values
   end
 
-  def build variables, insert_value
-    if variables.length > 0
-      variables.each_with_index { | variable, index |
-        cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@instruments_script}'"
-      %x(#{cmd})
+  def build
+    if @variables.length > 0
+      @variables.each_with_index { | variable, index |
+        if @on_ios
+          cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@instruments_script}'"
+        else
+          cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@uiautomator_script}'"
+        end
+        %x(#{cmd})
       }
     end
   end
@@ -111,7 +116,7 @@ class Cucumber
     end
   end
 
-  def lineHandler lineb, to_end
+  def lineHandler lineb
 
     included = false
     if @on_ios
@@ -119,25 +124,26 @@ class Cucumber
         included = true
       end
     else
-      if lineb =~ /(.*)Given(.*)/ || lineb =~ /(.*)When(.*)/ || lineb =~ /(.*)Then(.*)/
+      if lineb.include? "public"
         included = true
       end
     end
     if included
       if @line_count != 0
-        to_end=false
+        @to_end=false
         @line_count=-1
       else
         function_variables = ""
         if @on_ios
           function_variables = lineb[/function\(([^)]+)\)/].to_s
         else
-          if lineb.include? "public"
-            function_variables = lineb[/\(([^)]+)\)/].to_s
-            method = lineb.split("(")[0].split(" ")
-            method=method[method.length-1]
-            @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}'"
-          end
+          function_variables = lineb[/\(([^)]+)\)/].to_s
+          method = lineb.split("(")[0].split(" ")
+          method=method[method.length-1]
+          @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}'"
+          lineb_a = lineb.split("(")[0]
+          lineb_b = lineb.split(")")[1]
+          lineb = "#{lineb_a}()#{lineb_b}"
         end
         if function_variables.length > 0
           if @on_ios
@@ -145,12 +151,13 @@ class Cucumber
           else
             function_variables = function_variables[1..-2]
           end
+          puts function_variables
           splitParams function_variables
         end
-        to_end = true
+        @to_end = true
       end
     end
-    return to_end
+    return lineb
   end
 
   def scenarios 
@@ -195,20 +202,19 @@ class Cucumber
 
             if @line_count > -1
 
-              to_end=lineHandler lineb, to_end
+              lineb=lineHandler lineb
 
-              if to_end
+              if @to_end
                 if @on_ios
                   cmd = "echo '#{lineb}' >> '#{@instruments_script}'"
-                  %x(#{cmd})
-                  if @variables.length > 0
-                    build @variables, @insert_value
-                    @variables.clear
-                    @insert_value.clear
-                  end
                 else
                   cmd = "echo '#{lineb}' >> '#{@uiautomator_script}'"
-                  %x(#{cmd})
+                end
+                %x(#{cmd})
+                if @variables.length > 0
+                  build
+                  @variables.clear
+                  @insert_value.clear
                 end
                 @line_count=@line_count+1
               end

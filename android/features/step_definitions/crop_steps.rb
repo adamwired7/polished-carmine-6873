@@ -42,20 +42,13 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
 
 
 //When("I select (.*) crop 2 times")
-public void selectCrop(int wCrop) throws UiObjectNotFoundException, InterruptedException {
+public void selectCrop(String wCrop) throws UiObjectNotFoundException, InterruptedException {
 
-  int wCrop = 0;
-  String[] mode;
-  mode = new String[5];
-  mode[0] = "Normal Crop";
-  mode[1] = "Square Crop";
-  mode[2] = "Custom Crop";
-  mode[3] = "3x2 Crop";
-  mode[4] = "3x5 Crop";
+  String mode = wCrop + " Crop";
 
-  UiObject cropMode = new UiObject(new UiSelector().description(mode[wCrop]));
+  UiObject cropMode = new UiObject(new UiSelector().description(mode));
   cropMode.click();
 
-  screenShot("crop_button_" + mode[wCrop]);
+  screenShot("crop_button_" + mode);
 
 }
