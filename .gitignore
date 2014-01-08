@@ -2,6 +2,7 @@ automation/data/*
 automation/data
 automation/r1_photo_effects.trace/*
 automation/r1_photo_effects.trace/form.template
+automation/src/com/example/qa_demo/Testing.java
  *.trace
 *.run
 effects.txt
