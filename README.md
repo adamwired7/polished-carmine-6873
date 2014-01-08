@@ -91,4 +91,4 @@ Here's a real example:
         screenShot("crop_button_" + mode);
     }
 
-As with iOS, *Given* *When* and *Then* are all interchangeable.  Step definitions with *And* should be created with with one of the former keywords.
+As with iOS, *Given* *When* and *Then* are all interchangeable.  Step definitions with *And* should be created with one of the former keywords.
