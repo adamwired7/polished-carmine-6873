@@ -5,6 +5,7 @@ class Cucumber
     @test_count = 0
     @line_count = -1
     @fail_count = 0
+    @function_count = 0
     @current_test = ""
     @variables = Array.new
     @insert_value = Array.new
@@ -140,10 +141,10 @@ class Cucumber
           function_variables = lineb[/\(([^)]+)\)/].to_s
           method = lineb.split("(")[0].split(" ")
           method=method[method.length-1]
-          @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}'"
+          @build_test = "#{@build_test} -c 'com.example.qa_demo.Testing##{method}#{@function_count}'"
           lineb_a = lineb.split("(")[0]
           lineb_b = lineb.split(")")[1]
-          lineb = "#{lineb_a}()#{lineb_b}"
+          lineb = "#{lineb_a}#{@function_count}()#{lineb_b}"
         end
         if function_variables.length > 0
           if @on_ios
@@ -183,6 +184,7 @@ class Cucumber
           @build_test=""
           @scenario_test_count = @scenario_test_count + 1
           @test_count = @test_count + 1
+          @function_count = 0
         end
 
         if line.length > 4
@@ -197,6 +199,7 @@ class Cucumber
                 words.shift
                 @insert_value=reg_is words, lineb_title.split(" ")
                 @line_count=0
+                @function_count=@function_count + 1
               end
             end
 

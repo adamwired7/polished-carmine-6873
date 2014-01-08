@@ -383,7 +383,7 @@ public void selectEffects(int wEffect, boolean shouldShow) throws UiObjectNotFou
 
 
 
-public void enterSDK() throws UiObjectNotFoundException, IOException {
+public void enterSDK1() throws UiObjectNotFoundException, IOException {
 
   //use to access SDK app
 
@@ -469,7 +469,7 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
 
 //When("I select (.*) crop 2 times")
 
-public void selectCrop() throws UiObjectNotFoundException, InterruptedException {
+public void selectCrop2() throws UiObjectNotFoundException, InterruptedException {
 
   String wCrop = "Custom";
 
@@ -492,7 +492,7 @@ public void selectCrop() throws UiObjectNotFoundException, InterruptedException 
 
 //Given("I have entered the SDK")
 
-public void selectCrop() throws UiObjectNotFoundException, InterruptedException {
+public void selectCrop3() throws UiObjectNotFoundException, InterruptedException {
 
   String wCrop = "Normal";
 
