@@ -159,14 +159,14 @@ class Cucumber
 
   def scenarios 
     started_at = Time.now
-    Dir.glob("features/*.feature") do |rb_file|
+    Dir.glob("features/*.feature") do |feature_file|
       @scenario_test_count = 0
       if @test_count > 0
         run_test
       end
-      feature = rb_file.split(".")[0].split("/")[1]
+      feature = feature_file.split(".")[0].split("/")[1]
       puts "\nFeature: #{feature}"
-      file = File.new(rb_file,"r")
+      file = File.new(feature_file,"r")
       while (line = file.gets)
         line = line.strip
         if line.include? "Scenario:"
