@@ -26,9 +26,11 @@ class Cucumber
     @build_test = ""
     @to_end = false
 
-    @on_ios=true
+    @on_ios = true
+    @script = @instruments_script
     if @platform == "android"
       @on_ios = false
+      @script = @uiautomator_script
     end
 
   end
@@ -46,12 +48,8 @@ class Cucumber
   def build
     if @variables.length > 0
       @variables.each_with_index { | variable, index |
-        if @on_ios
-          cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@instruments_script}'"
-        else
-          cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@uiautomator_script}'"
-        end
-        %x(#{cmd})
+        cmd = "echo '  #{variable} = #{@insert_value[index]};' >> '#{@script}'"
+      %x(#{cmd})
       }
     end
   end
@@ -118,7 +116,6 @@ class Cucumber
   end
 
   def lineHandler lineb
-
     included = false
     if @on_ios
       if lineb.include? "function"
@@ -152,7 +149,6 @@ class Cucumber
           else
             function_variables = function_variables[1..-2]
           end
-          puts function_variables
           splitParams function_variables
         end
         @to_end = true
@@ -208,11 +204,9 @@ class Cucumber
               lineb=lineHandler lineb
 
               if @to_end
-                if @on_ios
-                  cmd = "echo '#{lineb}' >> '#{@instruments_script}'"
-                else
-                  cmd = "echo '#{lineb}' >> '#{@uiautomator_script}'"
-                end
+
+                cmd = "echo '#{lineb}' >> '#{@script}'"
+
                 %x(#{cmd})
                 if @variables.length > 0
                   build
