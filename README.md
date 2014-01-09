@@ -36,7 +36,7 @@ Once the feature has been explained, write scenarios for that feature.  Start ea
                And I select "Normal" crop 2 times
                Then the "Normal" crop button should display a down state
                
-For each feature, create a {feature}_steps.rb file in the step_definitions directory [ within the features directory ].
+For each feature, create a {feature}\_steps.rb file in the step\_definitions directory [ within the features directory ].
 
 ### iOS
 
