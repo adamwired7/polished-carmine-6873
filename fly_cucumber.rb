@@ -122,6 +122,7 @@ class Fly_Cucumber
         if !step_title.nil? && step_title.length > 4
           if test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/
             puts "    -- #{test_data['setup']['scenario_line']}"
+            puts step_title
             words = test_data['setup']['scenario_line'].split(" ")
             words.shift
             identify_step_regex_values_from words, step_title.split(" "), test_data
@@ -159,7 +160,9 @@ class Fly_Cucumber
         run_available_test_before_scenarios test_data
         prepare_next_scenario test_data
       else
-        match_scenario_steps test_data
+        if !test_data['setup']['scenario_line'].include? "Feature:"
+          match_scenario_steps test_data
+        end
       end
     end
   end
