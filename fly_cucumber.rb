@@ -127,6 +127,7 @@ class Fly_Cucumber
             identify_step_regex_values_from words, step_title.split(" "), test_data
             test_data["setup"]["line_count"] = 0
             test_data["setup"]["function_count"] = test_data["setup"]["function_count"] + 1
+            test_data["results"]["step_count"] = test_data["results"]["step_count"] + 1
           end
         end
         write_test_function_to_executable_file test_data
@@ -140,14 +141,12 @@ class Fly_Cucumber
     %x(echo '#import "#{@instruments_header}"' > #{@instruments_script})
     %x(cat #{@uiautomator_script_template} > #{@uiautomator_script})
     test_data["results"]["scenario_count"] = test_data["results"]["scenario_count"] + 1
-    test_data["results"]["step_count"] = test_data["results"]["step_count"] + 1
+    test_data["setup"]["temp_scenario_count"] = test_data["setup"]["temp_scenario_count"] + 1
     test_data["setup"]["function_count"] = 0
   end
 
   def run_available_test_before_scenarios test_data
-    puts "here1"
-    if test_data["results"]["scenario_count"] > 0
-      puts "here2"
+    if test_data["setup"]["temp_scenario_count"] > 0
       run_test test_data
     end
   end
@@ -166,15 +165,14 @@ class Fly_Cucumber
   end
 
   def run_available_test_before_features test_data
-    puts "here3"
     if test_data["results"]["step_count"] > 0
-      puts "here4"
       run_test test_data
     end
   end
 
   def identify_new_feature_from feature_file, test_data 
-    #test_data["results"]["scenario_count"] = 0
+    test_data['results']['feature_count'] = test_data['results']['feature_count'] + 1
+    test_data["setup"]["temp_scenario_count"] = 0
     run_available_test_before_features test_data
     test_data['setup']['feature'] = feature_file.split(".")[0].split("/")[1]
     puts "\nFeature: #{test_data['setup']['feature']}"
@@ -191,7 +189,8 @@ class Fly_Cucumber
       puts "- #{test_data['results']['failure_detail'][index]}"
       }
     end
-    puts "\nScenarios: #{test_data['results']['scenario_count']}"
+    puts "\nFeatures: #{test_data['results']['feature_count']}"
+    puts "Scenarios: #{test_data['results']['scenario_count']}"
     puts "Steps: #{test_data['results']['step_count']}\nFailures: #{test_data['results']['failures'].length}"
     puts "#{run_time} seconds"
   end
@@ -267,11 +266,13 @@ class Fly_Cucumber
       "failures" => Array.new, 
       "failure_detail" => Array.new, 
       "scenario_count" => 0, 
-      "step_count" => 0
+      "step_count" => 0,
+      "feature_count" => 0
     },
       "setup" => {
       "feature" => "",
       "line_count" => 0,
+      "temp_scenario_count" => 0,
       "function_count" => 0,
       "uiautomator_functions" => "",
       "scenario_line" => "",
