@@ -1,13 +1,54 @@
-Then("the (.*) crop button should display a down state", function(wcrop) {
-  expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
-});
+//Given("I have entered the SDK")
+public void enterSDK() throws UiObjectNotFoundException, IOException {
+  //use to access SDK app
 
-When("I select (.*) crop (.*) times", function(wcrop,times) {
-  for(var t=0; t<times; t++){
-    target.frontMostApp().mainWindow().buttons()[wcrop].tap();
+  try {
+    getUiDevice().wakeUp();
+  } catch (RemoteException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
   }
-});
 
-Given("I have entered the SDK", function() {
-  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
-});
+
+  getUiDevice().pressHome();
+
+  UiObject allAppsButton = new UiObject(new UiSelector().description("Apps"));
+
+  allAppsButton.clickAndWaitForNewWindow();
+
+  UiObject appsTab = new UiObject(new UiSelector().text("Apps"));
+
+  appsTab.click();
+
+  UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
+
+  appViews.setAsHorizontalList();
+
+  UiObject settingsApp = appViews.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),"Photo Effects Demo");
+  settingsApp.clickAndWaitForNewWindow();
+
+
+  UiObject nextImage = new UiObject(new UiSelector().text("Next Image"));
+
+  nextImage.click();
+
+  UiObject useImage = new UiObject(new UiSelector().text("Use Image"));
+
+  useImage.click();
+
+  screenShot("entered_sdk");
+
+}
+
+
+//When("I select (.*) crop 2 times")
+public void selectCrop(String wCrop) throws UiObjectNotFoundException, InterruptedException {
+
+  String mode = wCrop + " Crop";
+
+  UiObject cropMode = new UiObject(new UiSelector().description(mode));
+  cropMode.click();
+
+  screenShot("crop_button_" + mode);
+
+}

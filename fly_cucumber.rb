@@ -146,6 +146,7 @@ class Fly_Cucumber
     test_data["results"]["scenario_count"] = test_data["results"]["scenario_count"] + 1
     test_data["setup"]["temp_scenario_count"] = test_data["setup"]["temp_scenario_count"] + 1
     test_data["setup"]["function_count"] = 0
+    test_data['setup']['uiautomator_functions'] = ""
   end
 
   def run_available_test_before_scenarios test_data
