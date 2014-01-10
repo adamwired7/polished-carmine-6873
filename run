@@ -23,7 +23,10 @@ do
     udid=${udid[device_order]}
   else
     udid=($(adb devices | tail -n 2))
-    udid=${udid[0]} 
+    udid=${udid[0]}
+    if [ "$udid" == "List" ]; then
+      udid=""
+    fi
   fi
   cudid=${#udid}
 done
