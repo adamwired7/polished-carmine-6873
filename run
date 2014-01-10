@@ -31,4 +31,4 @@ done
 udid=${udid// /}
 echo "Starting automation for $for_app on $udid"
 
-ruby cucumber.rb $platform $for_app $udid
+ruby fly_cucumber.rb $platform $udid $for_app
