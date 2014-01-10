@@ -92,8 +92,10 @@ class Fly_Cucumber
     if test_data["setup"]["line_count"] > -1
       continue_writing_test = evaluate_line test_data
       if continue_writing_test
-        cmd = "echo '#{test_data['setup']['step_line']}' >> '#{@script}'"
-        %x(#{cmd})
+        if ( @on_ios || ( !@on_ios && ( test_data['setup']['line_count'] > 0 )))
+          cmd = "echo '#{test_data['setup']['step_line']}' >> '#{@script}'"
+          %x(#{cmd})
+        end
         if test_data['setup']['step_parameters'].length > 0
           test_data['setup']['step_parameters'].each_with_index { | variable, index |
             cmd = "echo '  #{variable} = #{test_data['setup']['step_parameter_values'][index]};' >> '#{@script}'"
