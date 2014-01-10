@@ -28,13 +28,15 @@ class Fly_Cucumber
 
   end
 
-  def prepare_line_for_execution
-    line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
-    line_method=line_method[line_method.length-1]
-    test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
-    line_a = test_data['setup']['step_line'].split("(")[0]
-    line_b = test_data['setup']['step_line'].split(")")[1]
-    test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
+  def prepare_line_for_execution test_data
+    if test_data['setup']['function_count'] > 0
+      line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
+      line_method=line_method[line_method.length-1]
+      test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
+      line_a = test_data['setup']['step_line'].split("(")[0]
+      line_b = test_data['setup']['step_line'].split(")")[1]
+      test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
+    end
   end
 
   def extract_parameters_for_regex test_data
@@ -53,7 +55,6 @@ class Fly_Cucumber
         test_data['setup']['step_parameters'][0] = parameters
       end
     end
-
   end
 
   def line_has_method_declaration test_data
@@ -74,13 +75,13 @@ class Fly_Cucumber
     continue_writing_test = true
     has_declaration = line_has_method_declaration test_data
     if has_declaration
-      if test_data['setup']['line_count'] != 0
+      if (((test_data['setup']['line_count'] != 0)  && @on_ios) || ((test_data['setup']['line_count'] != 1)  && !@on_ios))
         continue_writing_test = false
         test_data['setup']['line_count'] = -1
       else
         extract_parameters_for_regex test_data
         if !@on_ios
-          prepare_line_for_execution
+          prepare_line_for_execution test_data
         end
       end
     end
@@ -93,7 +94,7 @@ class Fly_Cucumber
       if continue_writing_test
         cmd = "echo '#{test_data['setup']['step_line']}' >> '#{@script}'"
         %x(#{cmd})
-        if test_data['setup']['step_parameter_values'].length > 0
+        if test_data['setup']['step_parameters'].length > 0
           test_data['setup']['step_parameters'].each_with_index { | variable, index |
             cmd = "echo '  #{variable} = #{test_data['setup']['step_parameter_values'][index]};' >> '#{@script}'"
           %x(#{cmd})
@@ -122,7 +123,6 @@ class Fly_Cucumber
         if !step_title.nil? && step_title.length > 4
           if test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/
             puts "    -- #{test_data['setup']['scenario_line']}"
-            puts step_title
             words = test_data['setup']['scenario_line'].split(" ")
             words.shift
             identify_step_regex_values_from words, step_title.split(" "), test_data
@@ -224,7 +224,7 @@ class Fly_Cucumber
     %x(#{cmd})
     cmd="adb shell rm -r /mnt/sdcard/Pictures/automation/ || true; adb shell mkdir /mnt/sdcard/Pictures/automation || true;"
     %x(#{cmd})
-    cmd="cd #{@uiautomator_test_directory}; ant build; adb push bin/testing.jar /data/local/tmp/"
+    cmd="cd #{@lib_directory}; ant build; adb push bin/testing.jar /data/local/tmp/"
     %x(#{cmd})
     cmd="adb shell uiautomator runtest testing.jar #{test_data['setup']['uiautomator_functions']} > #{@results_data_output}"
     %x(#{cmd})

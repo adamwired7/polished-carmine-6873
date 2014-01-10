@@ -29,8 +29,3 @@ public class Testing extends UiAutomatorTestCase {
     File storePath = new File("/mnt/sdcard/Pictures/automation/" + currentTime + "_" + ofwhat + ".png");
     getUiDevice().takeScreenshot(storePath);
   }
-//Given("I have entered the SDK")
-
-//When("I select (.*) crop 2 times")
-
-}
