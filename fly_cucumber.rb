@@ -197,12 +197,13 @@ class Fly_Cucumber
     end
     puts "\nFeatures: #{test_data['results']['feature_count']}"
     puts "Scenarios: #{test_data['results']['scenario_count']}"
-    puts "Steps: #{test_data['results']['step_count']}\nFailures: #{test_data['results']['failures'].length}"
+    puts "Steps: #{test_data['results']['step_count']}"
+    puts "Failures: #{test_data['results']['failures'].length}"
     puts "#{run_time} seconds"
   end
 
   def save_run_failures results, test_data
-    test_data['results']['faulures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_line']}"
+    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_line']}"
     test_data['results']['failure_detail'].push results
   end
 
@@ -216,8 +217,10 @@ class Fly_Cucumber
       puts "    <<PASS>>"
     else
       puts "    <<FAIL>>"
-      cmdc="grep -i 'Fail' #{@results_data_output} | cut -d':' -f 4"
+      cmdc="grep -i 'Fail\|error' #{@results_data_output} | cut -d':' -f 4"
+      %x(#{cmdc})
       resc=%x(#{cmdc})
+      puts resc
       save_run_failures resc, test_data
     end
   end
