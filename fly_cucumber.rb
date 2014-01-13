@@ -161,6 +161,7 @@ class Fly_Cucumber
       test_data['setup']['scenario_line'] = scenario_line
       test_data['setup']['feature'] = test_data['setup']['feature'].strip
       if test_data['setup']['scenario_line'].include? "Scenario:"
+        test_data['setup']['scenario_title'] = test_data['setup']['scenario_line']
         run_available_test_before_scenarios test_data
         prepare_next_scenario test_data
       else
@@ -205,7 +206,7 @@ class Fly_Cucumber
 
   def save_run_failures results, test_data
     puts test_data['setup']['scenario_line']
-    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_line']}"
+    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_title']} / #{test_data['setup']['scenario_line']}"
     test_data['results']['failure_detail'].push results
   end
 
@@ -290,6 +291,7 @@ class Fly_Cucumber
       "function_count" => 0,
       "uiautomator_functions" => "",
       "scenario_line" => "",
+      "scenario_title" => "",
       "step_line" => "",
       "step_parameters" => Array.new,
       "step_parameter_values" => Array.new
