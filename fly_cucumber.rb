@@ -157,7 +157,8 @@ class Fly_Cucumber
 
   def identify_scenarios_in feature_file, test_data
     features = File.new(feature_file,"r")
-    while (test_data['setup']['scenario_line'] = features.gets)
+    while (scenario_line = features.gets)
+      test_data['setup']['scenario_line'] = scenario_line
       test_data['setup']['feature'] = test_data['setup']['feature'].strip
       if test_data['setup']['scenario_line'].include? "Scenario:"
         run_available_test_before_scenarios test_data
@@ -203,25 +204,30 @@ class Fly_Cucumber
   end
 
   def save_run_failures results, test_data
+    puts test_data['setup']['scenario_line']
     test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_line']}"
     test_data['results']['failure_detail'].push results
   end
 
-  def run_ios_test results_directory, test_data
+  def parse_results target
+    cmd="grep -i #{target} #{@results_data_output}"
+    response=%x(#{cmd})
+    return response
+  end
 
+  def run_ios_test results_directory, test_data
     cmd="instruments -D #{@instruments_trace} -w #{@udid} -t #{@instruments_template} #{@application_name} -e UIASCRIPT #{@instruments_script} -e UIARESULTSPATH #{results_directory}/ > #{@results_data_output}"
     %x(#{cmd})
-    cmdb="grep -i 'Pass' #{@results_data_output} | cut -d' ' -f 4"
-    res=%x(#{cmdb})
-    if res.include? "Pass"
+    successes = parse_results "pass"
+    if successes.include? "Pass"
       puts "    <<PASS>>"
     else
       puts "    <<FAIL>>"
-      cmdc="grep -i 'Fail\|error' #{@results_data_output} | cut -d':' -f 4"
-      %x(#{cmdc})
-      resc=%x(#{cmdc})
-      puts resc
-      save_run_failures resc, test_data
+      errors_and_failures = parse_results "error"
+      if errors_and_failures.length == 0
+        errors_and_failures = parse_results "fail"
+      end
+      save_run_failures errors_and_failures, test_data
     end
   end
 
@@ -246,12 +252,11 @@ class Fly_Cucumber
     else
       puts "    <<FAIL>>"
       if res[0].to_i > 0
-        cmdc="grep -i 'Failure in' #{@results_data_output} | cut -d' ' -f 3"
+        errors_and_failures = parse_results "Failure in"
       else
-        cmdc="grep -i 'Error in' #{@results_data_output} | cut -d' ' -f 3"
+        errors_and_failures = parse_results "Error in"
       end
-      resc=%x(#{cmdc})
-      save_run_failures resc, test_data
+      save_run_failures errors_and_failures, test_data
     end
   end
 
