@@ -158,14 +158,15 @@ class Fly_Cucumber
   def identify_scenarios_in feature_file, test_data
     features = File.new(feature_file,"r")
     while (scenario_line = features.gets)
-      test_data['setup']['scenario_line'] = scenario_line
       test_data['setup']['feature'] = test_data['setup']['feature'].strip
-      if test_data['setup']['scenario_line'].include? "Scenario:"
-        test_data['setup']['scenario_title'] = test_data['setup']['scenario_line']
+      if scenario_line.include? "Scenario:"
         run_available_test_before_scenarios test_data
         prepare_next_scenario test_data
+        puts scenario_line
+        test_data['setup']['scenario_title'] = scenario_line
       else
-        if !test_data['setup']['scenario_line'].include? "Feature:"
+        if !scenario_line.include? "Feature:"
+          test_data['setup']['scenario_line'] = scenario_line
           match_scenario_steps test_data
         end
       end
@@ -206,7 +207,7 @@ class Fly_Cucumber
 
   def save_run_failures results, test_data
     puts test_data['setup']['scenario_line']
-    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_title']} / #{test_data['setup']['scenario_line']}"
+    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_title']} - #{test_data['setup']['scenario_line']}"
     test_data['results']['failure_detail'].push results
   end
 
