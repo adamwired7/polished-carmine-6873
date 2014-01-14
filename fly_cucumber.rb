@@ -120,6 +120,7 @@ class Fly_Cucumber
   def match_scenario_steps test_data
     if test_data['setup']['scenario_line'].length > 4
       feature_steps = File.new("features/step_definitions/#{test_data['setup']['feature']}_steps.rb","r")
+      found_line = false
       while (test_data['setup']['step_line'] = feature_steps.gets)
         step_title = test_data['setup']['step_line'].split('"')[1]
         if !step_title.nil? && step_title.length > 4
@@ -131,11 +132,16 @@ class Fly_Cucumber
             test_data["setup"]["line_count"] = 0
             test_data["setup"]["function_count"] = test_data["setup"]["function_count"] + 1
             test_data["results"]["step_count"] = test_data["results"]["step_count"] + 1
+            found_line = true
           end
         end
         write_test_function_to_executable_file test_data
       end
       feature_steps.close
+      if !found_line && ( test_data["setup"]["temp_scenario_count"] > 0 )
+        puts "    * #{test_data['setup']['scenario_line']} [ Pending ]"
+        test_data["results"]["undefined"].push test_data["setup"]["scenario_line"]
+      end
     end
   end
 
@@ -203,6 +209,7 @@ class Fly_Cucumber
     puts "Scenarios: #{test_data['results']['scenario_count']}"
     puts "Steps: #{test_data['results']['step_count']}"
     puts "Failures: #{test_data['results']['failures'].length}"
+    puts "Pending: #{test_data['results']['undefined'].length}"
     puts "#{run_time} seconds"
   end
 
@@ -283,7 +290,8 @@ class Fly_Cucumber
       "failure_detail" => Array.new, 
       "scenario_count" => 0, 
       "step_count" => 0,
-      "feature_count" => 0
+      "feature_count" => 0,
+      "undefined" => Array.new
     },
       "setup" => {
       "feature" => "",
