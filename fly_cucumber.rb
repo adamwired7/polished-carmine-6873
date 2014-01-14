@@ -140,7 +140,6 @@ class Fly_Cucumber
   end
 
   def prepare_next_scenario test_data
-    puts "\n  #{test_data['setup']['scenario_line']}"
     %x(echo '#import "#{@instruments_header}"' > #{@instruments_script})
     %x(cat #{@uiautomator_script_template} > #{@uiautomator_script})
     test_data["results"]["scenario_count"] = test_data["results"]["scenario_count"] + 1
@@ -162,12 +161,14 @@ class Fly_Cucumber
       if scenario_line.include? "Scenario:"
         run_available_test_before_scenarios test_data
         prepare_next_scenario test_data
-        puts scenario_line
+        puts puts "\n  #{scenario_line}"
         test_data['setup']['scenario_title'] = scenario_line
       else
         if !scenario_line.include? "Feature:"
-          test_data['setup']['scenario_line'] = scenario_line
-          match_scenario_steps test_data
+          if scenario_line.length > 4
+            test_data['setup']['scenario_line'] = scenario_line
+            match_scenario_steps test_data
+          end
         end
       end
     end
@@ -206,8 +207,7 @@ class Fly_Cucumber
   end
 
   def save_run_failures results, test_data
-    puts test_data['setup']['scenario_line']
-    test_data['results']['failures'].push "#{test_data['setup']['feature']} / #{test_data['setup']['scenario_title']} - #{test_data['setup']['scenario_line']}"
+    test_data['results']['failures'].push "#{test_data['setup']['feature'].strip} | #{test_data['setup']['scenario_title'].strip} >> #{test_data['setup']['scenario_line'].strip}"
     test_data['results']['failure_detail'].push results
   end
 
