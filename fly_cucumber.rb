@@ -238,7 +238,7 @@ class Fly_Cucumber
 
   def save_run_failures results, test_data
     test_data['results']['failures'].push "#{test_data['setup']['feature'].strip} | #{test_data['setup']['scenario_title'].strip} >> #{test_data['setup']['scenario_line'].strip}"
-    if results.length > 1
+    if results.kind_of?(Array)
       test_data['results']['failure_detail'].push results.join(" | ")
     else
       test_data['results']['failure_detail'].push results
