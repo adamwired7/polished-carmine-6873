@@ -93,7 +93,7 @@ class Fly_Cucumber
       continue_writing_test = evaluate_line test_data
       if continue_writing_test
         if ( @on_ios || ( !@on_ios && ( test_data['setup']['line_count'] > 0 )))
-          cmd = "echo '#{test_data['setup']['step_line']}' >> '#{@script}'"
+          cmd = "sed '#{test_data['setup']['step_line_count']}q;d' #{test_data['setup']['step_line_file']} >> '#{@script}'"
           %x(#{cmd})
         end
         if test_data['setup']['step_parameters'].length > 0
@@ -119,8 +119,10 @@ class Fly_Cucumber
 
   def match_scenario_steps test_data
     if test_data['setup']['scenario_line'].length > 4
-      feature_steps = File.new("features/step_definitions/#{test_data['setup']['feature']}_steps.rb","r")
+      test_data['setup']['step_line_file'] = "features/step_definitions/#{test_data['setup']['feature']}_steps.rb"
+      feature_steps = File.new(test_data['setup']['step_line_file'],"r")
       found_line = false
+      line_count = 1
       while (test_data['setup']['step_line'] = feature_steps.gets)
         step_title = test_data['setup']['step_line'].split('"')[1]
         if !step_title.nil? && step_title.length > 4
@@ -135,7 +137,9 @@ class Fly_Cucumber
             found_line = true
           end
         end
+        test_data['setup']['step_line_count'] = line_count
         write_test_function_to_executable_file test_data
+        line_count = line_count + 1
       end
       feature_steps.close
       if !found_line && ( test_data["setup"]["temp_scenario_count"] > 0 )
@@ -302,6 +306,8 @@ class Fly_Cucumber
       "scenario_line" => "",
       "scenario_title" => "",
       "step_line" => "",
+      "step_line_file" => "",
+      "step_line_count" => 0,
       "step_parameters" => Array.new,
       "step_parameter_values" => Array.new
     }
