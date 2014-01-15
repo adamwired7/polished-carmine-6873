@@ -79,9 +79,11 @@ class Fly_Cucumber
         continue_writing_test = false
         test_data['setup']['line_count'] = -1
       else
+        if test_data['results']['step_count'] > 0
         extract_parameters_for_regex test_data
         if !@on_ios
           prepare_line_for_execution test_data
+        end
         end
       end
     end
@@ -91,7 +93,7 @@ class Fly_Cucumber
   def write_test_function_to_executable_file test_data
     if test_data["setup"]["line_count"] > -1
       continue_writing_test = evaluate_line test_data
-      if continue_writing_test
+      if continue_writing_test && test_data['results']['step_count'] > 0
         if ( @on_ios || ( !@on_ios && ( test_data['setup']['line_count'] > 0 )))
           cmd = "sed '#{test_data['setup']['step_line_count']}q;d' #{test_data['setup']['step_line_file']} >> '#{@script}'"
           %x(#{cmd})
@@ -164,6 +166,22 @@ class Fly_Cucumber
     end
   end
 
+  def check_for_given_when_then_and scenario_line
+    line_is_valid = false
+    [
+      "Given",
+      "When",
+      "Then",
+      "And"
+    ].each {  | keyword |
+      if scenario_line.include? keyword
+        line_is_valid = true
+        break
+      end
+    }
+    return line_is_valid
+  end
+
   def identify_scenarios_in feature_file, test_data
     features = File.new(feature_file,"r")
     while (scenario_line = features.gets)
@@ -171,11 +189,12 @@ class Fly_Cucumber
       if scenario_line.include? "Scenario:"
         run_available_test_before_scenarios test_data
         prepare_next_scenario test_data
-        puts puts "\n  #{scenario_line}"
+        puts "\n  #{scenario_line}"
         test_data['setup']['scenario_title'] = scenario_line
       else
         if !scenario_line.include? "Feature:"
-          if scenario_line.length > 4
+          line_is_valid = check_for_given_when_then_and scenario_line
+          if line_is_valid
             test_data['setup']['scenario_line'] = scenario_line
             match_scenario_steps test_data
           end
@@ -308,6 +327,7 @@ class Fly_Cucumber
       "step_line" => "",
       "step_line_file" => "",
       "step_line_count" => 0,
+      "step_line_match" => false,
       "step_parameters" => Array.new,
       "step_parameter_values" => Array.new
     }
