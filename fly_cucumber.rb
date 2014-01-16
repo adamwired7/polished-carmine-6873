@@ -80,10 +80,10 @@ class Fly_Cucumber
         test_data['setup']['line_count'] = -1
       else
         if test_data['results']['step_count'] > 0
-        extract_parameters_for_regex test_data
-        if !@on_ios
-          prepare_line_for_execution test_data
-        end
+          extract_parameters_for_regex test_data
+          if !@on_ios
+            prepare_line_for_execution test_data
+          end
         end
       end
     end
@@ -246,7 +246,7 @@ class Fly_Cucumber
   end
 
   def parse_results target
-    cmd="grep -i #{target} #{@results_data_output}"
+    cmd="grep -i #{target} #{@results_data_output} | grep -v 'kAXErrorFailure'"
     response=%x(#{cmd})
     return response
   end
@@ -254,15 +254,25 @@ class Fly_Cucumber
   def run_ios_test results_directory, test_data
     cmd="instruments -D #{@instruments_trace} -w #{@udid} -t #{@instruments_template} #{@application_name} -e UIASCRIPT #{@instruments_script} -e UIARESULTSPATH #{results_directory}/ > #{@results_data_output}"
     %x(#{cmd})
-    successes = parse_results "pass"
-    if successes.include? "Pass"
-      puts "    <<PASS>>"
+
+    errors_and_failures = Array.new
+
+    errors_and_failures = errors_and_failures.push (parse_results "error")
+    errors_and_failures = errors_and_failures.push (parse_results "fail")
+
+    errors_and_failures.delete_if { |error_failure|
+      error_failure.empty?
+    }
+
+    if errors_and_failures.length == 0
+      successes = parse_results "pass"
+      if successes.include? "Pass"
+        puts "    <<PASS>>"
+      else
+        puts "missing UIALogger.logPass(test)"
+      end
     else
       puts "    <<FAIL>>"
-      errors_and_failures = parse_results "error"
-      if errors_and_failures.length == 0
-        errors_and_failures = parse_results "fail"
-      end
       save_run_failures errors_and_failures, test_data
     end
   end
