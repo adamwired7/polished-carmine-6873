@@ -3,10 +3,11 @@ class Fly_Cucumber
   def initialize platform, udid, application_name
 
     #general configuation
+    # changing these would require changes elsewhere
+    @udid = udid
     @lib_directory = "automation"
     @results_data_output = "effects.txt"
-    @results_media_directory = "#{@lib_directory}/data"
-    @udid = udid
+    @results_media_directory = "www/runs/#{@udid}"
     @application_name = application_name
 
     #ios configuration

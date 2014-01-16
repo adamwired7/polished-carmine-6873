@@ -1,7 +1,11 @@
 #!/bin/bash
 platform=$1
 for_app=$2
+build_directory_a=$3
+build_directory_b=$4
 cudid=0
+
+original_directory=pwd
 
 if [[ -z "$platform" ]]; then
   echo "You did not specify a platform."
@@ -34,4 +38,51 @@ done
 udid=${udid// /}
 echo "Starting automation for $for_app on $udid"
 
+if [[ -z $build_directory_b ]]; then
+  echo "skipping directory B build"
+else
+  cd $build_directory_b
+  xcrun xcodebuild -target R1PhotoEffectsSDK -sdk iphoneos "ARCHS=armv7s armv7" BUILD_NUMBER=${BUILD_NUMBER} IPHONEOS_DEPLOYMENT_TARGET=5.0 clean build
+  cd $original_directory
+fi
+
+if [[ -z $build_directory_a ]]; then 
+  echo "skipping directory A build"
+else
+  cd $build_directory_a
+  xcrun xcodebuild -target Demo -sdk iphoneos "ARCHS=armv7s armv7" clean build CODE_SIGN_IDENTITY="iPhone Developer: Brad Smith (YE9V76353E)"
+  "test/fruitstrap" -i $udid -b build/Release-iphoneos/Demo.app
+  cd $original_directory
+fi
+
+rm -r www/runs/*
+
 ruby fly_cucumber.rb $platform $udid $for_app
+
+echo "Preparing results"
+
+current_directory=($(pwd))
+
+for run in www/runs/$udid/*
+do
+  for sub_directory in $run/*
+  do
+    if [ -d "$sub_directory" ]; then
+      cd "$sub_directory"
+      for screenshot in *.png
+      do
+        if [ -f $screenshot ]; then
+          echo $screenshot
+          mv $screenshot ../
+        fi
+      done
+      cd $current_directory
+    fi
+  done
+done
+
+
+cd www
+./index.rb
+
+open "$udid.html"
