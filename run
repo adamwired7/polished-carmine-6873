@@ -79,6 +79,13 @@ do
       cd $current_directory
     fi
   done
+  for pngs in $run/*.png
+  do
+    if [ -f $pngs ]; then
+      echo "<screen name='${pngs##*/}'></screen>" >> "$run/meta.xml"
+    fi
+  done
+  echo "</test>" >> "$run/meta.xml"
 done
 
 

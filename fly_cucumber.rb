@@ -252,7 +252,7 @@ class Fly_Cucumber
     return response
   end
 
-  def run_ios_test results_directory, test_data
+  def run_ios_test results_directory, test_time, test_data
     cmd="instruments -D #{@instruments_trace} -w #{@udid} -t #{@instruments_template} #{@application_name} -e UIASCRIPT #{@instruments_script} -e UIARESULTSPATH #{results_directory}/ > #{@results_data_output}"
     %x(#{cmd})
 
@@ -276,9 +276,10 @@ class Fly_Cucumber
       puts "    <<FAIL>>"
       save_run_failures errors_and_failures, test_data
     end
+    create_metadata results_directory, test_time, errors_and_failures, test_data
   end
 
-  def run_android_test results_directory, test_data
+  def run_android_test results_directory, test_time, test_data
     cmd="echo '}' >> #{@uiautomator_script}"
     %x(#{cmd})
     cmd="adb shell rm -r /mnt/sdcard/Pictures/automation/ || true; adb shell mkdir /mnt/sdcard/Pictures/automation || true;"
@@ -305,20 +306,31 @@ class Fly_Cucumber
       end
       save_run_failures errors_and_failures, test_data
     end
+    create_metadata results_directory, test_time, errors_and_failures, test_data
   end
 
 
   def run_test test_data
-    results_directory = "#{@results_media_directory}/#{Time.new().to_i}"
+    test_time = Time.new().to_i
+    results_directory = "#{@results_media_directory}/#{test_time}"
     %x([ -d #{@results_media_directory} ] || mkdir #{@results_media_directory})
     %x(mkdir #{results_directory})
 
     if @on_ios
-      run_ios_test results_directory, test_data
+      run_ios_test results_directory, test_time, test_data
     else
-      run_android_test results_directory, test_data
+      run_android_test results_directory, test_time, test_data
     end
   end
+
+  def create_metadata results_directory, test_time, errors_and_failures, test_data
+    target = File.open("#{results_directory}/meta.xml", 'w')
+    target.write('<?xml version="1.0" encoding="UTF-8" ?>')
+    target.write("<test name='#{test_data['setup']['feature']} | #{test_data['setup']['scenario_title']} | #{test_data['setup']['scenario_line']}' date='#{test_time}' errors='#{errors_and_failures}'>")
+#    target.write("</test>")
+    target.close()
+  end
+
 
   def test_handler
     started_at = Time.now
