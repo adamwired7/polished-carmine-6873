@@ -115,15 +115,24 @@ opts = OptionParser.new
 OptionParser.new do |o|
   o.on('-h') { output_help; exit }
   o.on('-r') { refresh; }
+  o.on('-u UDID') { |udid| $udid = udid }
+  o.on('-s STATE') { |state| $state= state}
   o.parse!
 end
 
+@udid = $udid
 results = %x[ls runs]
 
 hashes = Array.new
 a_list = results.split("\n")
 a_list.each do |file|
-  hashes << file if file =~ /^[^.]+$/
+  if @udid.nil?
+    hashes << file if file =~ /^[^.]+$/
+  else
+    if file == @udid
+      hashes << file if file =~ /^[^.]+$/
+    end
+  end
 end
 
 a_suites = Array.new

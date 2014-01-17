@@ -1,23 +1,41 @@
 #!/bin/bash
 platform=$1
 for_app=$2
-build_directory_a=$3
-build_directory_b=$4
+feature=$3
+build_directory_a=$4
+build_directory_b=$5
 cudid=0
 
-original_directory=pwd
+original_directory=($(pwd))
+
+run_instructions="./run [ platform ] [ app_name ] [ all_or_feature_by_name ] [ optional_sdk_or_app_directory ] [ optional_app_directory_if_using_sdk ]"
 
 if [[ -z "$platform" ]]; then
   echo "You did not specify a platform."
-  echo "./run [ platform ] [ app_name ]"
+  echo $run_instructions
   exit
 fi
 
 if [[ -z "$for_app" ]]; then
   echo "You did not specify an app name."
-  echo "./run [ platform] [ app_name ]"
+  echo $run_instructions
   exit
 fi
+
+if [[ -z "$feature" ]]; then
+  echo "You did not specify a feature name or all"
+  echo $run_instructions
+  exit
+else
+  feature=($(echo $feature | awk '{print tolower($0)}'))
+  if [[ ! -f "features/$feature.feature" && $feature != "all" ]]; then
+    echo "The feature you specified does not have a .feature file associated with it."
+    echo "Feature files should be created in the features directory."
+    echo "Scenarios for a feature called 'crop' should be written in features/crop.feature"
+    exit
+  fi
+fi
+
 
 echo "Making sure we have a connection to a device...We can wait forever here..."
 while [ $cudid -eq 0 ]
@@ -57,11 +75,9 @@ fi
 
 rm -r www/runs/*
 
-ruby fly_cucumber.rb $platform $udid $for_app
+ruby lib/fly_cucumber.rb $platform $udid $for_app $feature
 
 echo "Preparing results"
-
-current_directory=($(pwd))
 
 for run in www/runs/$udid/*
 do
@@ -76,7 +92,7 @@ do
           mv $screenshot ../
         fi
       done
-      cd $current_directory
+      cd $original_directory
     fi
   done
   for pngs in $run/*.png
@@ -88,8 +104,9 @@ do
   echo "</test>" >> "$run/meta.xml"
 done
 
+[ ! -f effects_temp ] || rm effects_temp
 
 cd www
-./index.rb
+./index.rb -u $udid
 
 open "$udid.html"

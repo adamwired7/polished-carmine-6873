@@ -1,18 +1,19 @@
 class Fly_Cucumber
 
-  def initialize platform, udid, application_name
+  def initialize platform, udid, application_name, feature
 
     #general configuation
     # changing these would require changes elsewhere
     @udid = udid
+    @feature = feature.downcase
     @lib_directory = "automation"
-    @results_data_output = "effects.txt"
+    @results_data_output = "#{@lib_directory}/effects.txt"
     @results_media_directory = "www/runs/#{@udid}"
     @application_name = application_name
 
     #ios configuration
-    @instruments_script = "effectScript.js"
-    @instruments_header = "#{@lib_directory}/helpers/effects_header.js"
+    @instruments_script = "#{@lib_directory}/effectScript.js"
+    @instruments_header = "helpers/effects_header.js"
     @instruments_trace = "#{@lib_directory}/r1_photo_effects.trace"
     @instruments_template = "#{@lib_directory}/r1_photo_effects"
 
@@ -30,14 +31,37 @@ class Fly_Cucumber
   end
 
   def prepare_line_for_execution test_data
-    if test_data['setup']['function_count'] > 0
-      line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
-      line_method=line_method[line_method.length-1]
-      test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
-      line_a = test_data['setup']['step_line'].split("(")[0]
-      line_b = test_data['setup']['step_line'].split(")")[1]
-      test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
-    end
+      if @on_ios
+        prepare_line_for_execution_ios test_data
+      else
+        prepare_line_for_execution_android test_data
+      end
+  end
+
+  def prepare_line_for_execution_ios test_data
+        if test_data['setup']['step_line'].include? '"'
+          quotation = '"'
+        else
+          quotation = "'"
+        end
+        first_part = test_data['setup']['step_line'].split(quotation)[0]
+        if test_data['setup']['scenario_line'].include? '"'
+          second_part = test_data['setup']['scenario_line'].split('"').join('')
+        else 
+          second_part = test_data['setup']['scenario_line'].split("'").join('')
+        end
+        third_part = test_data['setup']['step_line'].split(quotation)[2]
+        test_data['setup']['step_line'] = "#{first_part}\"#{second_part}\"#{third_part}"
+        test_data['setup']['step_line'] = test_data['setup']['step_line'].split.join(' ')
+  end
+
+  def prepare_line_for_execution_android test_data
+        line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
+        line_method=line_method[line_method.length-1]
+        test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
+        line_a = test_data['setup']['step_line'].split("(")[0]
+        line_b = test_data['setup']['step_line'].split(")")[1]
+        test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
   end
 
   def extract_parameters_for_regex test_data
@@ -82,7 +106,7 @@ class Fly_Cucumber
       else
         if test_data['results']['step_count'] > 0
           extract_parameters_for_regex test_data
-          if !@on_ios
+          if test_data['setup']['function_count'] > 0 
             prepare_line_for_execution test_data
           end
         end
@@ -95,10 +119,16 @@ class Fly_Cucumber
     if test_data["setup"]["line_count"] > -1
       continue_writing_test = evaluate_line test_data
       if continue_writing_test && test_data['results']['step_count'] > 0
-        if ( @on_ios || ( !@on_ios && ( test_data['setup']['line_count'] > 0 )))
+        if test_data['setup']['line_count'] == 0
+          tgt = File.open("effects_temp", 'w')
+          tgt.write(test_data['setup']['step_line'])
+          tgt.close()
+          cmd = "cat effects_temp >> #{@script}; echo '' >> #{@script}"
+        else
           cmd = "sed '#{test_data['setup']['step_line_count']}q;d' #{test_data['setup']['step_line_file']} >> '#{@script}'"
-          %x(#{cmd})
         end
+        %x(#{cmd})
+        
         if test_data['setup']['step_parameters'].length > 0
           test_data['setup']['step_parameters'].each_with_index { | variable, index |
             cmd = "echo '  #{variable} = #{test_data['setup']['step_parameter_values'][index]};' >> '#{@script}'"
@@ -327,7 +357,7 @@ class Fly_Cucumber
     target = File.open("#{results_directory}/meta.xml", 'w')
     target.write('<?xml version="1.0" encoding="UTF-8" ?>')
     target.write("<test name='#{test_data['setup']['feature']} | #{test_data['setup']['scenario_title']} | #{test_data['setup']['scenario_line']}' date='#{test_time}' errors='#{errors_and_failures}'>")
-#    target.write("</test>")
+    #    target.write("</test>")
     target.close()
   end
 
@@ -360,7 +390,12 @@ class Fly_Cucumber
     }
     }
 
+    if @feature == "all"
     Dir.glob("features/*.feature") do |feature_file|
+      identify_new_feature_from feature_file, test_data
+    end
+    else
+      feature_file = Dir.glob("features/#{@feature}.feature")[0]
       identify_new_feature_from feature_file, test_data
     end
     run_test test_data
@@ -369,5 +404,5 @@ class Fly_Cucumber
   end
 end
 
-run_tests = Fly_Cucumber.new(ARGV[0],ARGV[1],ARGV[2])
+run_tests = Fly_Cucumber.new(ARGV[0],ARGV[1],ARGV[2],ARGV[3])
 run_tests.test_handler
