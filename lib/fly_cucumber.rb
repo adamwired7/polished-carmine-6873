@@ -38,18 +38,20 @@ class Fly_Cucumber
     end
   end
 
-  def prepare_line_for_execution_ios test_data
-    if test_data['setup']['step_line'].include? '"'
+  def identify_quotations_in line
+    if line.include? '"'
       quotation = '"'
     else
       quotation = "'"
     end
+    return quotation
+  end
+
+  def prepare_line_for_execution_ios test_data
+    quotation = identify_quotations_in test_data['setup']['step_line']
     first_part = test_data['setup']['step_line'].split(quotation)[0]
-    if test_data['setup']['scenario_line'].include? '"'
-      second_part = test_data['setup']['scenario_line'].split('"').join('')
-    else 
-      second_part = test_data['setup']['scenario_line'].split("'").join('')
-    end
+    quotation = identify_quotations_in test_data['setup']['scenario_line']
+    second_part = test_data['setup']['scenario_line'].split(quotation).join('')
     third_part = test_data['setup']['step_line'].split(quotation)[2]
     test_data['setup']['step_line'] = "#{first_part}\"#{second_part}\"#{third_part}"
     test_data['setup']['step_line'] = test_data['setup']['step_line'].split.join(' ')
@@ -123,12 +125,8 @@ class Fly_Cucumber
           tgt = File.open("effects_temp", 'w')
           tgt.write(test_data['setup']['step_line'])
           if !@on_ios
-            if test_data['setup']['scenario_line'].include? '"'
-              quotation = '"'
-            else
-              quotation = "'"
-            end
-            tgt.write("screenShot(\"#{test_data['setup']['scenario_line'].strip.gsub(' ','_').split(quotation).join('_')}\");");
+            quotation = identify_quotations_in test_data['setup']['scenario_line']
+            tgt.write("screenShot(\"before_#{test_data['setup']['scenario_line'].strip.gsub(' ','_').split(quotation).join('_')}\");");
           end
           tgt.close()
           cmd = "cat effects_temp >> #{@script}; echo '' >> #{@script}"
@@ -183,7 +181,8 @@ class Fly_Cucumber
       found_line = false
       line_count = 1
       while (test_data['setup']['step_line'] = feature_steps.gets)
-        step_title = test_data['setup']['step_line'].split('"')[1]
+        quotation = identify_quotations_in test_data['setup']['step_line']
+        step_title = test_data['setup']['step_line'].split(quotation)[1]
         if !step_title.nil? && step_title.length > 4
           has_given_when_then = false
           if !@on_ios
