@@ -60,7 +60,11 @@ class Fly_Cucumber
   def prepare_line_for_execution_android test_data
     line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
     line_method=line_method[line_method.length-1]
-    test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
+
+    quotation = identify_quotations_in test_data['setup']['scenario_line']
+    screen_shot_call = "screenShot(\"#{test_data['setup']['scenario_line'].strip.gsub(' ','_').split(quotation).join('_')}\");"
+
+    test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} #{line_method}#{test_data['setup']['function_count']}(); #{screen_shot_call}"
     line_a = test_data['setup']['step_line'].split("(")[0]
     line_b = test_data['setup']['step_line'].split(")")[1]
     test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
@@ -124,10 +128,6 @@ class Fly_Cucumber
         if (@on_ios && test_data['setup']['line_count'] == 0) || (!@on_ios && test_data['setup']['line_count'] == 1)
           tgt = File.open("effects_temp", 'w')
           tgt.write(test_data['setup']['step_line'])
-          if !@on_ios
-            quotation = identify_quotations_in test_data['setup']['scenario_line']
-            tgt.write("screenShot(\"before_#{test_data['setup']['scenario_line'].strip.gsub(' ','_').split(quotation).join('_')}\");");
-          end
           tgt.close()
           cmd = "cat effects_temp >> #{@script}; echo '' >> #{@script}"
         else
@@ -339,13 +339,18 @@ class Fly_Cucumber
   end
 
   def run_android_test results_directory, test_time, test_data
-    cmd="echo '}' >> #{@uiautomator_script}"
+
+    cmd="echo 'public void runAll() throws UiObjectNotFoundException, InterruptedException, IOException {' >> #{@uiautomator_script}"
+    %x(#{cmd})
+    cmd="echo '#{test_data['setup']['uiautomator_functions']}' >>  #{@uiautomator_script}"
+    %x(#{cmd})
+    cmd="echo '}}' >> #{@uiautomator_script}"
     %x(#{cmd})
     cmd="adb shell rm -r /mnt/sdcard/Pictures/automation/ || true; adb shell mkdir /mnt/sdcard/Pictures/automation || true;"
     %x(#{cmd})
     cmd="cd #{@lib_directory}; ant build; adb push bin/testing.jar /data/local/tmp/"
     %x(#{cmd})
-    cmd="adb shell uiautomator runtest testing.jar #{test_data['setup']['uiautomator_functions']} > #{@results_data_output}"
+    cmd="adb shell uiautomator runtest testing.jar -c 'com.example.qa_demo.Testing#runAll' > #{@results_data_output}"
     %x(#{cmd})
     cmd="adb pull /mnt/sdcard/Pictures/automation/ #{results_directory}/"
     %x(#{cmd})

@@ -31,7 +31,7 @@ public class Testing extends UiAutomatorTestCase {
   }
 //Given("I have entered the SDK")
 public void enterSDK1() throws UiObjectNotFoundException, IOException {
-screenShot("before_Given_I_have_entered_the_SDK");
+
   //use to access SDK app
 
   try {
@@ -68,15 +68,13 @@ screenShot("before_Given_I_have_entered_the_SDK");
 
   useImage.click();
 
-  screenShot("entered_sdk");
-
 }
 
 
 //When("I select (.*) crop 2 times")
 //When("I select (.*) crop 2 times")
 public void selectCrop2() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select__Normal__crop_2_times");
+
   String wCrop = "Normal";
 
   String mode = wCrop + " Crop";
@@ -84,54 +82,49 @@ screenShot("before_And_I_select__Normal__crop_2_times");
   UiObject cropMode = new UiObject(new UiSelector().description(mode));
   cropMode.click();
 
-  screenShot("select_crop_button_" + mode);
-
 }
 
 //When("I select next")
 //When("I select next")
 public void moveOn3() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select_next");
+
   UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
    nextFromCrop.click();
-  screenShot("select_next");
 }
 
 //When("I select the Filter Effects option")
 //When("I select the Filter Effects option")
 public void filters4() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select_the_Filter_Effects_option");
+
   UiObject effectMode = new UiObject(new UiSelector().description("Filter Effects"));
   effectMode.click();
-  screenShot("select_filter_effects");
 }
 
 //When("I select the Fun House option")
 //When("I select the Fun House option")
 public void filtersb5() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select_the_Fun_House_option");
+
   UiObject effectMode = new UiObject(new UiSelector().description("Fun House"));
   effectMode.click();
-  screenShot("select_fun_house");
 }
 
 //When("I select the (.*) effect")
 //When("I select the (.*) effect")
 public void filtersc6() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select_the__Toon__effect");
+
   String wEffect = "Toon";
  UiObject effectMode = new UiObject(new UiSelector().description(wEffect));
  effectMode.click();
- screenShot("select "+wEffect);
 }
 //Given("I have entered the SDK")
 //When("I select next")
 public void moveOn7() throws UiObjectNotFoundException, InterruptedException {
-screenShot("before_And_I_select_next");
+
   UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
    nextFromCrop.click();
-  screenShot("select_next");
 }
 
 //When("I select the Filter Effects option")
-}
+public void runAll() throws UiObjectNotFoundException, InterruptedException, IOException {
+ enterSDK1(); screenShot("Given_I_have_entered_the_SDK"); selectCrop2(); screenShot("And_I_select__Normal__crop_2_times"); moveOn3(); screenShot("And_I_select_next"); filters4(); screenShot("And_I_select_the_Filter_Effects_option"); filtersb5(); screenShot("And_I_select_the_Fun_House_option"); filtersc6(); screenShot("And_I_select_the__Toon__effect"); moveOn7(); screenShot("And_I_select_next");
+}}

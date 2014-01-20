@@ -36,8 +36,6 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
 
   useImage.click();
 
-  screenShot("entered_sdk");
-
 }
 
 
@@ -49,34 +47,28 @@ public void selectCrop(String wCrop) throws UiObjectNotFoundException, Interrupt
   UiObject cropMode = new UiObject(new UiSelector().description(mode));
   cropMode.click();
 
-  screenShot("select_crop_button_" + mode);
-
 }
 
 //When("I select next")
 public void moveOn() throws UiObjectNotFoundException, InterruptedException {
   UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
    nextFromCrop.click();
-  screenShot("select_next");
 }
 
 //When("I select the Filter Effects option")
 public void filters() throws UiObjectNotFoundException, InterruptedException {
   UiObject effectMode = new UiObject(new UiSelector().description("Filter Effects"));
   effectMode.click();
-  screenShot("select_filter_effects");
 }
 
 //When("I select the Fun House option")
 public void filtersb() throws UiObjectNotFoundException, InterruptedException {
   UiObject effectMode = new UiObject(new UiSelector().description("Fun House"));
   effectMode.click();
-  screenShot("select_fun_house");
 }
 
 //When("I select the (.*) effect")
 public void filtersc(String wEffect) throws UiObjectNotFoundException, InterruptedException {
  UiObject effectMode = new UiObject(new UiSelector().description(wEffect));
  effectMode.click();
- screenShot("select "+wEffect);
 }
