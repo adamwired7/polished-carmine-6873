@@ -108,8 +108,6 @@ rm -r www/runs/*
 
 ruby lib/fly_cucumber.rb $platform $udid $for_app $feature
 
-echo "Preparing results"
-
 for run in www/runs/$udid/*
 do
   for sub_directory in $run/*
@@ -119,7 +117,6 @@ do
       for screenshot in *.png
       do
         if [ -f $screenshot ]; then
-          echo $screenshot
           mv $screenshot ../
         fi
       done

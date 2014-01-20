@@ -8,8 +8,8 @@ This project leverages Behavior Driven Development (BDD) for ios automation test
 
 ### How-To
 
-`./run ios APP_NAME` will run the script for all features outlined in the features directory.  The command requires the app name.  Debug access to the app is required.
-`./run android APP_NAME` should be used for android.
+`./run ios APP_NAME feature_or_all optional_app_directory optional_sdk_directory` will run the script for all features outlined in the features directory.  The command requires the app name.  Debug access to the app is required.
+`./run android APP_NAME feature_or_all optional_app_directory optional_sdk_directory optional_android_relative_sdk_path_from_application` should be used for android.
 
 ### Setup
 
@@ -71,12 +71,14 @@ A couple built in validations exist:
 
 ### Android
 
-Create step definitions that mach each line/step in the scenario with the following java format:
+Create step definitions that match each line/step in the scenario with the following java format:
 
     //Given("{STEP}")
     public void methodName() throws UIUiObjectNotFoundException, InterruptedException {
         {JAVA}
     }
+
+All methods for actions *MUST* be void
 
 Here's a real example:
 
@@ -87,8 +89,6 @@ Here's a real example:
     
         UiObject cropMode = new UiObject(new UiSelector().description(mode));
         cropMode.click(); 
-      
-        screenShot("crop_button_" + mode);
     }
 
 As with iOS, *Given* *When* and *Then* are all interchangeable.  Step definitions with *And* should be created with one of the former keywords.
