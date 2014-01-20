@@ -3,13 +3,11 @@ Feature: Crop
   As someone who has taken a photo or selected a photo from the gallery
   I want to be able to crop my image
 
-  Scenario: Normal crop
+  Scenario: All crop and all effects
     Given I have entered the SDK
-    When I select "Normal" crop 2 times
-    Then the "Normal" crop button should display a down state
-
-  Scenario: Custom crop then normal crop
-    Given I have entered the SDK
-    When I select "Custom" crop 2 times
     And I select "Normal" crop 2 times
-    Then the "Normal" crop button should display a down state
+    And I select next
+    And I select the Filter Effects option
+    And I select the Fun House option
+    And I select the "Toon" effect
+    And I select next

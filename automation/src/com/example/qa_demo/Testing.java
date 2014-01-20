@@ -29,52 +29,109 @@ public class Testing extends UiAutomatorTestCase {
     File storePath = new File("/mnt/sdcard/Pictures/automation/" + currentTime + "_" + ofwhat + ".png");
     getUiDevice().takeScreenshot(storePath);
   }
-Then("the (.*) crop button should display a down state", function(wcrop) {
-  expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
-});
+//Given("I have entered the SDK")
+public void enterSDK1() throws UiObjectNotFoundException, IOException {
+screenShot("Given_I_have_entered_the_SDK");
+  //use to access SDK app
 
-When("I select (.*) crop (.*) times", function(wcrop,times) {
-  for(var t=0; t<times; t++){
-    target.frontMostApp().mainWindow().buttons()[wcrop].tap();
+  try {
+    getUiDevice().wakeUp();
+  } catch (RemoteException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
   }
-});
 
-  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
-});
-Then("the (.*) crop button should display a down state", function(wcrop) {
-  expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
-});
 
-  for(var t=0; t<times; t++){
-    target.frontMostApp().mainWindow().buttons()[wcrop].tap();
-  }
-});
+  getUiDevice().pressHome();
 
-Given("I have entered the SDK", function() {
-  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
-});
-Then("the (.*) crop button should display a down state", function(wcrop) {
-  expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
-});
+  UiObject allAppsButton = new UiObject(new UiSelector().description("Apps"));
 
-  for(var t=0; t<times; t++){
-    target.frontMostApp().mainWindow().buttons()[wcrop].tap();
-  }
-});
+  allAppsButton.clickAndWaitForNewWindow();
 
-Given("I have entered the SDK", function() {
-  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
-});
-  expect_equal(Number(target.frontMostApp().mainWindow().buttons()[wcrop].value()),1);
-});
+  UiObject appsTab = new UiObject(new UiSelector().text("Apps"));
 
-When("I select (.*) crop (.*) times", function(wcrop,times) {
-  for(var t=0; t<times; t++){
-    target.frontMostApp().mainWindow().buttons()[wcrop].tap();
-  }
-});
+  appsTab.click();
 
-Given("I have entered the SDK", function() {
-  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
-});
+  UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
+
+  appViews.setAsHorizontalList();
+
+  UiObject settingsApp = appViews.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),"Photo Effects Demo");
+  settingsApp.clickAndWaitForNewWindow();
+
+
+  UiObject nextImage = new UiObject(new UiSelector().text("Next Image"));
+
+  nextImage.click();
+
+  UiObject useImage = new UiObject(new UiSelector().text("Use Image"));
+
+  useImage.click();
+
+  screenShot("entered_sdk");
+
+}
+
+
+//When("I select (.*) crop 2 times")
+//When("I select (.*) crop 2 times")
+public void selectCrop2() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select__Normal__crop_2_times");
+  String wCrop = "Normal";
+
+  String mode = wCrop + " Crop";
+
+  UiObject cropMode = new UiObject(new UiSelector().description(mode));
+  cropMode.click();
+
+  screenShot("select_crop_button_" + mode);
+
+}
+
+//When("I select next")
+//When("I select next")
+public void moveOn3() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select_next");
+  UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
+   nextFromCrop.click();
+  screenShot("select_next");
+}
+
+//When("I select the Filter Effects option")
+//When("I select the Filter Effects option")
+public void filters4() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select_the_Filter_Effects_option");
+  UiObject effectMode = new UiObject(new UiSelector().description("Filter Effects"));
+  effectMode.click();
+  screenShot("select_filter_effects");
+}
+
+//When("I select the Fun House option")
+//When("I select the Fun House option")
+public void filtersb5() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select_the_Fun_House_option");
+  UiObject effectMode = new UiObject(new UiSelector().description("Fun House"));
+  effectMode.click();
+  screenShot("select_fun_house");
+}
+
+//When("I select the (.*) effect")
+//When("I select the (.*) effect")
+public void filtersc6() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select_the__Toon__effect");
+  String wEffect = "Toon";
+ UiObject effectMode = new UiObject(new UiSelector().description(wEffect));
+ effectMode.click();
+ screenShot("select "+wEffect);
+}
+//Given("I have entered the SDK")
+//When("I select next")
+public void moveOn7() throws UiObjectNotFoundException, InterruptedException {
+screenShot("And_I_select_next");
+  UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
+   nextFromCrop.click();
+  screenShot("select_next");
+}
+
+//When("I select the Filter Effects option")
 }

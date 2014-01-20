@@ -31,37 +31,37 @@ class Fly_Cucumber
   end
 
   def prepare_line_for_execution test_data
-      if @on_ios
-        prepare_line_for_execution_ios test_data
-      else
-        prepare_line_for_execution_android test_data
-      end
+    if @on_ios
+      prepare_line_for_execution_ios test_data
+    else
+      prepare_line_for_execution_android test_data
+    end
   end
 
   def prepare_line_for_execution_ios test_data
-        if test_data['setup']['step_line'].include? '"'
-          quotation = '"'
-        else
-          quotation = "'"
-        end
-        first_part = test_data['setup']['step_line'].split(quotation)[0]
-        if test_data['setup']['scenario_line'].include? '"'
-          second_part = test_data['setup']['scenario_line'].split('"').join('')
-        else 
-          second_part = test_data['setup']['scenario_line'].split("'").join('')
-        end
-        third_part = test_data['setup']['step_line'].split(quotation)[2]
-        test_data['setup']['step_line'] = "#{first_part}\"#{second_part}\"#{third_part}"
-        test_data['setup']['step_line'] = test_data['setup']['step_line'].split.join(' ')
+    if test_data['setup']['step_line'].include? '"'
+      quotation = '"'
+    else
+      quotation = "'"
+    end
+    first_part = test_data['setup']['step_line'].split(quotation)[0]
+    if test_data['setup']['scenario_line'].include? '"'
+      second_part = test_data['setup']['scenario_line'].split('"').join('')
+    else 
+      second_part = test_data['setup']['scenario_line'].split("'").join('')
+    end
+    third_part = test_data['setup']['step_line'].split(quotation)[2]
+    test_data['setup']['step_line'] = "#{first_part}\"#{second_part}\"#{third_part}"
+    test_data['setup']['step_line'] = test_data['setup']['step_line'].split.join(' ')
   end
 
   def prepare_line_for_execution_android test_data
-        line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
-        line_method=line_method[line_method.length-1]
-        test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
-        line_a = test_data['setup']['step_line'].split("(")[0]
-        line_b = test_data['setup']['step_line'].split(")")[1]
-        test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
+    line_method = test_data['setup']['step_line'].split("(")[0].split(" ")
+    line_method=line_method[line_method.length-1]
+    test_data['setup']['uiautomator_functions'] = "#{test_data['setup']['uiautomator_functions']} -c 'com.example.qa_demo.Testing##{line_method}#{test_data['setup']['function_count']}'"
+    line_a = test_data['setup']['step_line'].split("(")[0]
+    line_b = test_data['setup']['step_line'].split(")")[1]
+    test_data['setup']['step_line'] = "#{line_a}#{test_data['setup']['function_count']}()#{line_b}"
   end
 
   def extract_parameters_for_regex test_data
@@ -119,16 +119,24 @@ class Fly_Cucumber
     if test_data["setup"]["line_count"] > -1
       continue_writing_test = evaluate_line test_data
       if continue_writing_test && test_data['results']['step_count'] > 0
-        if test_data['setup']['line_count'] == 0
+        if (@on_ios && test_data['setup']['line_count'] == 0) || (!@on_ios && test_data['setup']['line_count'] == 1)
           tgt = File.open("effects_temp", 'w')
           tgt.write(test_data['setup']['step_line'])
+          if !@on_ios
+            if test_data['setup']['scenario_line'].include? '"'
+              quotation = '"'
+            else
+              quotation = "'"
+            end
+            tgt.write("screenShot(\"#{test_data['setup']['scenario_line'].strip.gsub(' ','_').split(quotation).join('_')}\");");
+          end
           tgt.close()
           cmd = "cat effects_temp >> #{@script}; echo '' >> #{@script}"
         else
           cmd = "sed '#{test_data['setup']['step_line_count']}q;d' #{test_data['setup']['step_line_file']} >> '#{@script}'"
         end
         %x(#{cmd})
-        
+
         if test_data['setup']['step_parameters'].length > 0
           test_data['setup']['step_parameters'].each_with_index { | variable, index |
             cmd = "echo '  #{variable} = #{test_data['setup']['step_parameter_values'][index]};' >> '#{@script}'"
@@ -150,6 +158,24 @@ class Fly_Cucumber
     }
   end
 
+  def does_step_title_have_keywords test_data, step_title
+    has_given_when_then = false
+    [
+      "Given",
+      "When",
+      "Then",
+      "And"
+    ].each {  | keyword |
+      if test_data['setup']['step_line'].include? keyword
+        if test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/
+          has_given_when_then = true
+          break
+        end
+      end
+    }
+    return has_given_when_then
+  end
+
   def match_scenario_steps test_data
     if test_data['setup']['scenario_line'].length > 4
       test_data['setup']['step_line_file'] = "features/step_definitions/#{test_data['setup']['feature']}_steps.rb"
@@ -159,7 +185,11 @@ class Fly_Cucumber
       while (test_data['setup']['step_line'] = feature_steps.gets)
         step_title = test_data['setup']['step_line'].split('"')[1]
         if !step_title.nil? && step_title.length > 4
-          if test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/
+          has_given_when_then = false
+          if !@on_ios
+            has_given_when_then = does_step_title_have_keywords test_data, step_title
+          end
+          if (( test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/ ) && @on_ios) || has_given_when_then
             puts "    -- #{test_data['setup']['scenario_line']}"
             words = test_data['setup']['scenario_line'].split(" ")
             words.shift
@@ -391,9 +421,9 @@ class Fly_Cucumber
     }
 
     if @feature == "all"
-    Dir.glob("features/*.feature") do |feature_file|
-      identify_new_feature_from feature_file, test_data
-    end
+      Dir.glob("features/*.feature") do |feature_file|
+        identify_new_feature_from feature_file, test_data
+      end
     else
       feature_file = Dir.glob("features/#{@feature}.feature")[0]
       identify_new_feature_from feature_file, test_data
