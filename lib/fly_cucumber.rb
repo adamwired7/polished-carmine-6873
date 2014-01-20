@@ -48,11 +48,11 @@ class Fly_Cucumber
   end
 
   def prepare_line_for_execution_ios test_data
-    quotation = identify_quotations_in test_data['setup']['step_line']
-    first_part = test_data['setup']['step_line'].split(quotation)[0]
-    quotation = identify_quotations_in test_data['setup']['scenario_line']
-    second_part = test_data['setup']['scenario_line'].split(quotation).join('')
-    third_part = test_data['setup']['step_line'].split(quotation)[2]
+    quotation_a = identify_quotations_in test_data['setup']['step_line']
+    first_part = test_data['setup']['step_line'].split(quotation_a)[0]
+    quotation_b = identify_quotations_in test_data['setup']['scenario_line']
+    second_part = test_data['setup']['scenario_line'].split(quotation_b).join('')
+    third_part = test_data['setup']['step_line'].split(quotation_a)[2]
     test_data['setup']['step_line'] = "#{first_part}\"#{second_part}\"#{third_part}"
     test_data['setup']['step_line'] = test_data['setup']['step_line'].split.join(' ')
   end
