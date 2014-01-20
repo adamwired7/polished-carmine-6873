@@ -4,11 +4,21 @@ for_app=$2
 feature=$3
 build_directory_a=$4
 build_directory_b=$5
+build_directory_c=$6
 cudid=0
 
 original_directory=($(pwd))
 
-run_instructions="./run [ platform ] [ app_name ] [ all_or_feature_by_name ] [ optional_sdk_or_app_directory ] [ optional_app_directory_if_using_sdk ]"
+run_instructions="./run [ platform ] [ app_name ] [ all_or_feature_by_name ] [ optional_sdk_or_app_directory ] [ optional_app_directory_if_using_sdk ] [ android_relative_path_to_sdk_from_app ] "
+
+clean_all(){
+  if [ -f build.xml ]; then
+    rm build.xml
+  fi
+  if [ -f project.properties ]; then
+    rm project.properties
+  fi
+}
 
 if [[ -z "$platform" ]]; then
   echo "You did not specify a platform."
@@ -60,7 +70,17 @@ if [[ -z $build_directory_b ]]; then
   echo "skipping directory B build"
 else
   cd $build_directory_b
-  xcrun xcodebuild -target R1PhotoEffectsSDK -sdk iphoneos "ARCHS=armv7s armv7" BUILD_NUMBER=${BUILD_NUMBER} IPHONEOS_DEPLOYMENT_TARGET=5.0 clean build
+  if [ "$platform" == "ios" ]; then
+    xcrun xcodebuild -target R1PhotoEffectsSDK -sdk iphoneos "ARCHS=armv7s armv7" BUILD_NUMBER=${BUILD_NUMBER} IPHONEOS_DEPLOYMENT_TARGET=5.0 clean build
+  else
+    if [[ -z $build_directory_c ]]; then
+      echo "You did not specify the relative SDK path"
+      exit
+    fi
+    clean_all
+    android update project --target "android-17" --path .
+    ant clean release
+  fi
   cd $original_directory
 fi
 
@@ -68,8 +88,19 @@ if [[ -z $build_directory_a ]]; then
   echo "skipping directory A build"
 else
   cd $build_directory_a
-  xcrun xcodebuild -target Demo -sdk iphoneos "ARCHS=armv7s armv7" clean build CODE_SIGN_IDENTITY="iPhone Developer: Brad Smith (YE9V76353E)"
-  "test/fruitstrap" -i $udid -b build/Release-iphoneos/Demo.app
+  if [ "$platform" == "ios" ]; then
+    xcrun xcodebuild -target Demo -sdk iphoneos "ARCHS=armv7s armv7" clean build CODE_SIGN_IDENTITY="iPhone Developer: Brad Smith (YE9V76353E)"
+    "test/fruitstrap" -i $udid -b build/Release-iphoneos/Demo.app
+  else
+    clean_all
+    if [[ -z $build_directory_b ]]; then
+      android update project --target "android-17" --path .
+    else
+      android update project --target "android-17" --path . --library $build_directory_c
+    fi
+    ant debug
+    adb install -r bin/*.apk
+  fi
   cd $original_directory
 fi
 
