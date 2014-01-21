@@ -52,6 +52,8 @@ Here's a real example:
      Given("I have entered the SDK", function() {
           target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
      });
+     
+The button object can be easily identified with the "record" tool at the bottom of the GUI in Instruments Automation.  
 
 *Given*, *When*, and *Then* are all interchangeable with respect to the syntax, though each carry their own literal value.  Step definitions for *And* steps should be created with the *Given*, *When*, or *Then* that they correspond to.
 
@@ -90,5 +92,8 @@ Here's a real example:
         UiObject cropMode = new UiObject(new UiSelector().description(mode));
         cropMode.click(); 
     }
+    
+The description can be found with the uiautomatorviewer bundled in the Android SDK.  `uiautomatorviewer` on the command line opens the GUI.  Pressing the snapshot button on the top left hand corner of the tool displays a hierarchy of all objects in view.  
+
 
 As with iOS, *Given* *When* and *Then* are all interchangeable.  Step definitions with *And* should be created with one of the former keywords.
