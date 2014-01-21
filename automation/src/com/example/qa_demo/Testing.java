@@ -40,36 +40,27 @@ public void enterSDK1() throws UiObjectNotFoundException, IOException {
     // TODO Auto-generated catch block
     e.printStackTrace();
   }
-
-
   getUiDevice().pressHome();
-
+  
   UiObject allAppsButton = new UiObject(new UiSelector().description("Apps"));
-
   allAppsButton.clickAndWaitForNewWindow();
-
+  
   UiObject appsTab = new UiObject(new UiSelector().text("Apps"));
-
   appsTab.click();
 
   UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-
   appViews.setAsHorizontalList();
-
+  
   UiObject settingsApp = appViews.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),"Photo Effects Demo");
   settingsApp.clickAndWaitForNewWindow();
-
-
+  
   UiObject nextImage = new UiObject(new UiSelector().text("Next Image"));
-
   nextImage.click();
-
+  
   UiObject useImage = new UiObject(new UiSelector().text("Use Image"));
-
   useImage.click();
 
 }
-
 
 //When("I select (.*) crop (.*) times")
 //When("I select (.*) crop (.*) times")
@@ -93,15 +84,17 @@ public void moveOn3() throws UiObjectNotFoundException, InterruptedException {
    nextFromCrop.click();
 }
 
-//When("I select the Filter Effects tab")
-//When("I select the Filter Effects tab")
-public void filters4() throws UiObjectNotFoundException, InterruptedException {
+//When("I select the (.*) (.*) option")
+//When("I select the (.*) (.*) option")
+public void filtersb4() throws UiObjectNotFoundException, InterruptedException {
 
-  UiObject effectMode = new UiObject(new UiSelector().description("Filter Effects"));
+  String wOption_word = "Filter";
+   String wOption_word_b = "Effects";
+  UiObject effectMode = new UiObject(new UiSelector().description(wOption_word+" "+wOption_word_b));
   effectMode.click();
 }
 
-//When("I select the (.*) (.*) option")
+//When("I select the (.*) effect")
 //When("I select the (.*) (.*) option")
 public void filtersb5() throws UiObjectNotFoundException, InterruptedException {
 
@@ -207,7 +200,7 @@ public void moveOn14() throws UiObjectNotFoundException, InterruptedException {
    nextFromCrop.click();
 }
 
-//When("I select the Filter Effects tab")
+//When("I select the (.*) (.*) option")
 public void runAll() throws UiObjectNotFoundException, InterruptedException, IOException {
- enterSDK1(); screenShot("Given_I_have_entered_the_SDK"); selectCrop2(); screenShot("And_I_select__Normal__crop_1_times"); moveOn3(); screenShot("And_I_select_next"); filters4(); screenShot("And_I_select_the_Filter_Effects_tab"); filtersb5(); screenShot("And_I_select_the__Fun___House__option"); filtersc6(); screenShot("And_I_select_the__Toon__effect"); filtersc7(); screenShot("And_I_select_the__Sketch__effect"); filtersc8(); screenShot("And_I_select_the__Buldge__effect"); filtersc9(); screenShot("And_I_select_the__Swirl__effect"); filtersc10(); screenShot("And_I_select_the__Emboss__effect"); filtersc11(); screenShot("And_I_select_the__Pinch__effect"); filtersc12(); screenShot("And_I_select_the__Stretch__effect"); filtersc13(); screenShot("And_I_select_the__Chalk__effect"); moveOn14(); screenShot("And_I_select_next");
+ enterSDK1(); screenShot("Given_I_have_entered_the_SDK"); selectCrop2(); screenShot("And_I_select__Normal__crop_1_times"); moveOn3(); screenShot("And_I_select_next"); filtersb4(); screenShot("And_I_select_the__Filter___Effects__option"); filtersb5(); screenShot("And_I_select_the__Fun___House__option"); filtersc6(); screenShot("And_I_select_the__Toon__effect"); filtersc7(); screenShot("And_I_select_the__Sketch__effect"); filtersc8(); screenShot("And_I_select_the__Buldge__effect"); filtersc9(); screenShot("And_I_select_the__Swirl__effect"); filtersc10(); screenShot("And_I_select_the__Emboss__effect"); filtersc11(); screenShot("And_I_select_the__Pinch__effect"); filtersc12(); screenShot("And_I_select_the__Stretch__effect"); filtersc13(); screenShot("And_I_select_the__Chalk__effect"); moveOn14(); screenShot("And_I_select_next");
 }}

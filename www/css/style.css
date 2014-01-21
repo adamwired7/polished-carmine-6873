@@ -16,6 +16,15 @@ div.container {
   width: 100%
 }
 
+.tname_small {
+  font-size: 10px;
+  line-height: 14px;
+  margin-top 10px;
+  float: left;
+  padding: 5px;
+}
+
+
 #left-column {
   float:left;
   width:297px;

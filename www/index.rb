@@ -7,14 +7,14 @@ require 'nokogiri'
 require 'date'
 
 def parse_test_name(file)
-  puts "parse_test_name:"
-  puts file
+  # puts "parse_test_name:"
+  # puts file
   test_name = ""
 
   file_parts = file.split(/\./)
   suffix     = file_parts[0].split(/_/)
   suffix.shift
-  puts suffix
+  # puts suffix
   suffix.each { |word| test_name = test_name + "#{word} " }
   test_name
 end
@@ -32,7 +32,12 @@ class TestSuite
     html_str = html_str + "<head>\n"
     html_str = html_str + "<link href=\"./css/style.css\" rel=\"Stylesheet\" type=\"text/css\"/>\n"
     html_str = html_str + "</head>\n<body>\n"
-    html_str = html_str + "<div id=\"left-column\"> test </div>\n"
+    html_str = html_str + "<div id=\"left-column\">\n"
+    html_str = html_str + "<div class='tname_small'>Demo Portrait Gallery: automation/tests/1383774602 apply no crop and no effects.js @ 2013-12-11T00:43:43+00:00 - 1 Total</div>\n"
+    self.tests.each do |test|
+      html_str = html_str + "<div class='tname_small'>#{test.name} @ #{DateTime.strptime(test.date,'%s')} - #{self.tests.count} Total</div>\n"
+    end
+    html_str = html_str + "</div>\n"
 
     self.tests.each do |test|
       html_str = html_str + "<div style='padding: 1px;'>\n"
@@ -139,12 +144,13 @@ a_suites = Array.new
 hashes.each do |udid|
   a_suites <<  get_tests(udid)
 end
-puts "testsuites..."
+puts "Generating testsuite(s)..."
 a_suites.each do |testsuite|
-  puts testsuite.udid
-  puts testsuite.tests
-  puts testsuite.to_html
+  # puts testsuite.udid
+  # puts testsuite.tests
+  # puts testsuite.to_html
   file = File.open("./#{testsuite.udid}.html", "w")
   file.write(testsuite.to_html)
   file.close
 end
+puts "Generating testsuite(s) complete."

@@ -8,36 +8,27 @@ public void enterSDK() throws UiObjectNotFoundException, IOException {
     // TODO Auto-generated catch block
     e.printStackTrace();
   }
-
-
   getUiDevice().pressHome();
-
+  
   UiObject allAppsButton = new UiObject(new UiSelector().description("Apps"));
-
   allAppsButton.clickAndWaitForNewWindow();
-
+  
   UiObject appsTab = new UiObject(new UiSelector().text("Apps"));
-
   appsTab.click();
 
   UiScrollable appViews = new UiScrollable(new UiSelector().scrollable(true));
-
   appViews.setAsHorizontalList();
-
+  
   UiObject settingsApp = appViews.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),"Photo Effects Demo");
   settingsApp.clickAndWaitForNewWindow();
-
-
+  
   UiObject nextImage = new UiObject(new UiSelector().text("Next Image"));
-
   nextImage.click();
-
+  
   UiObject useImage = new UiObject(new UiSelector().text("Use Image"));
-
   useImage.click();
 
 }
-
 
 //When("I select (.*) crop (.*) times")
 public void selectCrop(String wCrop, int times) throws UiObjectNotFoundException, InterruptedException {
@@ -53,12 +44,6 @@ public void selectCrop(String wCrop, int times) throws UiObjectNotFoundException
 public void moveOn() throws UiObjectNotFoundException, InterruptedException {
   UiObject nextFromCrop = new UiObject(new UiSelector().text("Next"));
    nextFromCrop.click();
-}
-
-//When("I select the Filter Effects tab")
-public void filters() throws UiObjectNotFoundException, InterruptedException {
-  UiObject effectMode = new UiObject(new UiSelector().description("Filter Effects"));
-  effectMode.click();
 }
 
 //When("I select the (.*) (.*) option")
