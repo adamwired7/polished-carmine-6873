@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e 
 platform=$1
 for_app=$2
 feature=$3
