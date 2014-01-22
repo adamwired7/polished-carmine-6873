@@ -49,7 +49,7 @@ else
   fi
 fi
 
-udid=($(./identify_udid))
+udid=($(./identify_udid $platform))
 
 echo "Starting automation for $for_app on $udid"
 
