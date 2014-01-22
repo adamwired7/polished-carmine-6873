@@ -90,7 +90,7 @@ else
   cd $build_directory_a
   if [ "$platform" == "ios" ]; then
     xcrun xcodebuild -target Demo -sdk iphoneos "ARCHS=armv7s armv7" clean build CODE_SIGN_IDENTITY="iPhone Developer: Brad Smith (YE9V76353E)"
-    "test/fruitstrap" -i $udid -b build/Release-iphoneos/Demo.app
+    "$original_directory/fruitstrap" -i $udid -b build/Release-iphoneos/Demo.app
   else
     clean_all
     if [[ -z $build_directory_b ]]; then
