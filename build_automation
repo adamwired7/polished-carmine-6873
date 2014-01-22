@@ -42,6 +42,7 @@ write_app()
     sed "s/QA_LINE_A/$QA_LINE_A/g" "automation/AppDelegateTemplate.m" > "automation/AppDelegateTemplateB.m"
 
     echo "Modifying $for_app for effects selection"
+    cp $build_directory_a/$for_app/AppDelegate.m AppDelegate.m
     sed "s/QA_LINE_B/$QA_LINE_B/g" "automation/AppDelegateTemplateB.m" > $build_directory_a/$for_app/AppDelegate.m
     rm "automation/AppDelegateTemplateB.m"
   
@@ -49,7 +50,8 @@ write_app()
     ./cucumber $platform $for_app $feature $build_directory_a
 
     # cleanup appdelegate
-    git checkout $build_directory_a/$for_app/AppDelegate.m
+    mv AppDelegate.m $build_directory_a/$for_app/AppDelegate.m
+    rm -f AppDelegate.m
 
   fi
 }
