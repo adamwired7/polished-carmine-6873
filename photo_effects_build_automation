@@ -1,0 +1,28 @@
+#!/bin/bash
+# Script for running RadiumOne Photo Effects SDK build / customization automation for iOS
+# Adam Cockell
+# January 2014
+
+app_directory=../../ios-sdk
+sdk_directory=$app_directory
+
+# check older builds
+./build_automation "ios" "Demo" "build_524" '' '' "build_regression" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "build_412" '' '' "build_regression" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "build_391" '' '' "build_regression" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "build_364" '' '' "build_regression" $app_directory $sdk_directory
+
+# check crop modes
+./build_automation "ios" "Demo" "" '[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:R1CropModeSquare] forKey:@"R1ExclusiveCropMode"];' '' "exclusive_crop_mode_square" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInteger:R1CropModeCustom] forKey:@"R1ExclusiveCropMode"];' '' "exclusive_crop_mode_custom" $app_directory $sdk_directory
+
+# check effects modes
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabEffects]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_effects" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabDraw]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_draw" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabBorders]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_borders" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabStickers]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_stickers" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabText]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_text" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabEffects,R1TabDraw,R1TabText,R1TabStickers,R1TabBorders]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_ordered" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabText,R1TabDraw]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_two_effects" $app_directory $sdk_directory
+./build_automation "ios" "Demo" "" '' 'NSArray *customTabs = @[R1TabDraw,R1TabDraw]; [[NSUserDefaults standardUserDefaults] setObject:customTabs forKey:@"R1TabSetupList"];' "exclusive_effect_mode_duplicates" $app_directory $sdk_directory
+

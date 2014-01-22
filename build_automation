@@ -33,6 +33,9 @@ write_app()
     ./build $platform $for_app $build_directory_a temp_build
     rm -r -f temp_build
     ./cucumber $platform $for_app build_regression
+
+    # want to rebuild the sdk
+    ./cucumber $platform $for_app $feature $build_directory_a $build_directory_b
   else
     # apply customization to current build
     echo "Modifying $for_app for crop selection"
@@ -41,9 +44,10 @@ write_app()
     echo "Modifying $for_app for effects selection"
     sed "s/QA_LINE_B/$QA_LINE_B/g" "automation/AppDelegateTemplateB.m" > $build_directory_a/$for_app/AppDelegate.m
     rm "automation/AppDelegateTemplateB.m"
-  fi
-  ./cucumber $platform $for_app $feature $build_directory_a $build_directory_b
   
+    # only want to rebuild the app
+    ./cucumber $platform $for_app $feature $build_directory_a
+  fi
 }
 
 write_app "$for_version" "$qa_line_a" "$qa_line_b" "$feature"
