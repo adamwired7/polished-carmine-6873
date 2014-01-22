@@ -159,10 +159,10 @@ class Fly_Cucumber
   def does_step_title_have_keywords test_data, step_title
     has_given_when_then = false
     [
-      "Given",
-      "When",
-      "Then",
-      "And"
+      "Given(",
+      "When(",
+      "Then(",
+      "And("
     ].each {  | keyword |
       if test_data['setup']['step_line'].include? keyword
         if test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/
@@ -185,10 +185,8 @@ class Fly_Cucumber
         step_title = test_data['setup']['step_line'].split(quotation)[1]
         if !step_title.nil? && step_title.length > 4
           has_given_when_then = false
-          if !@on_ios
-            has_given_when_then = does_step_title_have_keywords test_data, step_title
-          end
-          if (( test_data['setup']['scenario_line'] =~ /(.*)#{step_title}(.*)/ ) && @on_ios) || has_given_when_then
+          has_given_when_then = does_step_title_have_keywords test_data, step_title
+          if has_given_when_then
             puts "    -- #{test_data['setup']['scenario_line']}"
             words = test_data['setup']['scenario_line'].split(" ")
             words.shift

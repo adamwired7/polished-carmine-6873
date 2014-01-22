@@ -1,5 +1,5 @@
-Then("the I should see Launch SDK", function() {
-  expect_visisble(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
+Then("I should see Launch SDK", function() {
+  expect_visible(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
 });
 
 When("I select apply", function(){
