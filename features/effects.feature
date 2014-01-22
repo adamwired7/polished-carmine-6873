@@ -1,20 +1,14 @@
 Feature: Effects
-  In order to customize my image
-  As someone who has taken and formatted an image
-  I want to be able to add effects to my image
+  In order to reformat my image 
+  As someone who has taken a photo or selected a photo from the gallery and cropped
+  I want to be able to add effects
 
-  Scenario: All crop and all effects
+  Scenario: Filters
     Given I have entered the SDK
-    And I select "Normal" crop 1 times
-    And I select next
-    And I select the "Filter" "Effects" option
-    And I select the "Fun" "House" option
-    And I select the "Toon" effect
-    And I select the "Sketch" effect
-    And I select the "Buldge" effect
-    And I select the "Swirl" effect
-    And I select the "Emboss" effect
-    And I select the "Pinch" effect
-    And I select the "Stretch" effect
-    And I select the "Chalk" effect
-    And I select next
+    And I select the "Apply" option
+    When I select effect button 7 for "filters"
+    And I select effect button 8 for "borders"
+    And I select effect button 9 for "stickers"
+    And I select effect button 10 for "text"
+    And I select effect button 11 for "draw"
+    Then the "Filters" button should not display a down state
