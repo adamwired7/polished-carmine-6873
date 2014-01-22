@@ -14,14 +14,18 @@ write_app()
 {
   VERSION_TESTING=$1
   if [ "$VERSION_TESTING" != "" ]; then
+    [ ! -d temp_build ] || rm -r -f temp_build
     git clone git@github.com:viame/r1-effects-sdk-ios.git temp_build
     cd temp_build
+    git checkout $VERSION_TESTING
     git submodule init
     git submodule update
-    git checkout $VERSION_TESTING
-    
+
     cd ..
     ./build $platform $for_app ../../ios-sdk temp_build
+    rm -r -f temp_build
+    ./cucumber $platform $for_app crop
+    ./cucumber $platform $for_app crop ../../ios-sdk ../../ios-sdk
   fi
 }
 
