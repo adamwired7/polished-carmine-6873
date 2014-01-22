@@ -11,6 +11,8 @@ build_directory_c=$5
 
 original_directory=($(pwd))
 
+udid=($(./identify_udid $platform))
+
 if [[ -z $build_directory_b ]]; then
   echo "skipping directory B build"
 else

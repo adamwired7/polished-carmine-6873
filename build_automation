@@ -1,0 +1,28 @@
+#!/bin/bash
+# Script for validating custom SDK builds
+# Adam Cockell
+# January 2014
+
+platform=$1
+for_app=$2
+for_version=$3
+build_directory_a=$4
+build_directory_b=$5
+build_directory_c=$6
+
+write_app()
+{
+  VERSION_TESTING=$1
+  if [ "$VERSION_TESTING" != "" ]; then
+    git clone git@github.com:viame/r1-effects-sdk-ios.git temp_build
+    cd temp_build
+    git submodule init
+    git submodule update
+    git checkout $VERSION_TESTING
+    
+    cd ..
+    ./build $platform $for_app ../../ios-sdk temp_build
+  fi
+}
+
+write_app $for_version
