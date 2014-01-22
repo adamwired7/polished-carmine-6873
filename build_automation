@@ -6,14 +6,22 @@
 platform=$1
 for_app=$2
 for_version=$3
-build_directory_a=$4
-build_directory_b=$5
-build_directory_c=$6
+qa_line_a=$4
+qa_line_b=$5
+feature=$6
+build_directory_a=$7
+build_directory_b=$8
+build_directory_c=$9
 
 write_app()
 {
   VERSION_TESTING=$1
+  QA_LINE_A=$2
+  QA_LINE_B=$3
+  FEATURE=$4
+
   if [ "$VERSION_TESTING" != "" ]; then
+    # clone git repo and checkout older build
     [ ! -d temp_build ] || rm -r -f temp_build
     git clone git@github.com:viame/r1-effects-sdk-ios.git temp_build
     cd temp_build
@@ -22,11 +30,20 @@ write_app()
     git submodule update
 
     cd ..
-    ./build $platform $for_app ../../ios-sdk temp_build
+    ./build $platform $for_app $build_directory_a temp_build
     rm -r -f temp_build
     ./cucumber $platform $for_app build_regression
-    ./cucumber $platform $for_app build_regression ../../ios-sdk ../../ios-sdk
+  else
+    # apply customization to current build
+    echo "Modifying $for_app for crop selection"
+    sed "s/QA_LINE_A/$QA_LINE_A/g" "automation/AppDelegateTemplate.m" > "automation/AppDelegateTemplateB.m"
+
+    echo "Modifying $for_app for effects selection"
+    sed "s/QA_LINE_B/$QA_LINE_B/g" "automation/AppDelegateTemplateB.m" > $build_directory_a/$for_app/AppDelegate.m
+    rm "automation/AppDelegateTemplateB.m"
   fi
+  ./cucumber $platform $for_app $feature $build_directory_a $build_directory_b
+  
 }
 
-write_app $for_version
+write_app "$for_version" "$qa_line_a" "$qa_line_b" "$feature"
