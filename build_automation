@@ -24,8 +24,8 @@ write_app()
     cd ..
     ./build $platform $for_app ../../ios-sdk temp_build
     rm -r -f temp_build
-    ./cucumber $platform $for_app crop
-    ./cucumber $platform $for_app crop ../../ios-sdk ../../ios-sdk
+    ./cucumber $platform $for_app build_regression
+    ./cucumber $platform $for_app build_regression ../../ios-sdk ../../ios-sdk
   fi
 }
 
