@@ -1,0 +1,1 @@
+Then(" Then the Normal crop button should display a down state ", function(wcrop) {
