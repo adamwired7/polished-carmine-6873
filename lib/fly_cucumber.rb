@@ -332,7 +332,7 @@ class Fly_Cucumber
       if successes.include? "Pass"
         puts "    <<PASS>>"
       else
-        puts "missing UIALogger.logPass(test)"
+        puts "    missing UIALogger.logPass(test)"
       end
     else
       puts "    <<FAIL>>"
