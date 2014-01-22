@@ -294,7 +294,9 @@ class Fly_Cucumber
     puts "Failures: #{test_data['results']['failures'].length}"
     puts "Pending: #{test_data['results']['undefined'].length}"
     puts "#{run_time} seconds"
-    %x(exit "#{test_data['results']['failures'].length}")
+    if test_data['results']['failures'].length > 0
+      abort("FOUND #{test_data['results']['failures'].length} ERRORS")
+    end
   end
 
   def save_run_failures results, test_data

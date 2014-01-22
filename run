@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e 
+
 platform=$1
 for_app=$2
 feature=$3
@@ -108,7 +108,7 @@ fi
 rm -r www/runs/*
 
 ruby lib/fly_cucumber.rb $platform $udid $for_app $feature
-
+cucumber_errors=$?
 for run in www/runs/$udid/*
 do
   for sub_directory in $run/*
@@ -139,3 +139,7 @@ cd www
 ./index.rb -u $udid
 
 open "$udid.html"
+
+if [ "$cucumber_errors" -gt 0 ]; then
+  exit 1
+fi
