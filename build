@@ -13,6 +13,15 @@ original_directory=($(pwd))
 
 udid=($(./identify_udid $platform))
 
+clean_all(){
+  if [ -f build.xml ]; then
+    rm build.xml
+  fi
+  if [ -f project.properties ]; then
+    rm project.properties
+  fi
+}
+
 if [[ -z $build_directory_b ]]; then
   echo "skipping directory B build"
 else

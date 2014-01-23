@@ -3,8 +3,10 @@
 # Adam Cockell
 # January 2014
 
+set -e
 app_directory=../../ios-sdk
 sdk_directory=$app_directory
+
 
 # check older builds
 ./build_automation "ios" "Demo" "build_524" '' '' "build_regression" $app_directory $sdk_directory

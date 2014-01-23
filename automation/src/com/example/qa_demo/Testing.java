@@ -29,3 +29,58 @@ public class Testing extends UiAutomatorTestCase {
     File storePath = new File("/mnt/sdcard/Pictures/automation/" + currentTime + "_" + ofwhat + ".png");
     getUiDevice().takeScreenshot(storePath);
   }
+Given("I have entered the SDK", function() {
+  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
+
+});
+Then("I should see Launch SDK", function() {
+  expect_visible(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
+});
+
+When("I select apply", function(){
+  target.frontMostApp().toolbar().buttons()["Apply"].tap();
+
+});
+
+When("I select next", function() {
+  target.frontMostApp().mainWindow().buttons()["btn next"].tap();
+});
+
+Given("I have entered the SDK", function() {
+  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
+});
+Then("I should see Launch SDK", function() {
+  expect_visible(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
+});
+
+When("I select apply", function(){
+  target.frontMostApp().toolbar().buttons()["Apply"].tap();
+});
+
+When("I select next", function() {
+  target.frontMostApp().mainWindow().buttons()["btn next"].tap();
+
+});
+
+Given("I have entered the SDK", function() {
+  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
+});
+Then("I should see Launch SDK", function() {
+  expect_visible(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
+
+});
+
+When("I select apply", function(){
+  target.frontMostApp().toolbar().buttons()["Apply"].tap();
+});
+
+When("I select next", function() {
+  target.frontMostApp().mainWindow().buttons()["btn next"].tap();
+});
+
+Given("I have entered the SDK", function() {
+  target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
+});
+public void runAll() throws UiObjectNotFoundException, InterruptedException, IOException {
+
+}}

@@ -14,15 +14,6 @@ original_directory=($(pwd))
 
 run_instructions="./run [ platform ] [ app_name ] [ all_or_feature_by_name ] [ optional_sdk_or_app_directory ] [ optional_app_directory_if_using_sdk ] [ android_relative_path_to_sdk_from_app ] "
 
-clean_all(){
-  if [ -f build.xml ]; then
-    rm build.xml
-  fi
-  if [ -f project.properties ]; then
-    rm project.properties
-  fi
-}
-
 if [[ -z "$platform" ]]; then
   echo "You did not specify a platform."
   echo $run_instructions

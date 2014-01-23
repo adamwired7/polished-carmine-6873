@@ -3,7 +3,9 @@
 # Adam Cockell
 # January 2014
 
-platform=$1
+# Make sure this is run from inside of the repository that you clone
+
+platform=($(echo $1 | awk '{print tolower($0)}'))
 for_app=$2
 for_version=$3
 qa_line_a=$4
@@ -12,6 +14,7 @@ feature=$6
 build_directory_a=$7
 build_directory_b=$8
 build_directory_c=$9
+original_directory=($(pwd))
 
 set -e
 
@@ -25,14 +28,25 @@ write_app()
   if [ "$VERSION_TESTING" != "" ]; then
     # clone git repo and checkout older build
     [ ! -d temp_build ] || rm -r -f temp_build
-    git clone git@github.com:viame/r1-effects-sdk-ios.git temp_build
-    cd temp_build
-    git checkout $VERSION_TESTING
-    git submodule init
-    git submodule update
+    cd $build_directory_a
 
+    git clone git@github.com:radiumone/r1-effects-sdk-$platform.git temp_build
+    mv temp_build $build_directory_a/
+    cd $build_directory_a
+    mv temp_build ../
     cd ..
-    ./build $platform $for_app $build_directory_a temp_build
+
+    cd temp_build
+    temp_build_path=($(pwd))
+    git checkout $VERSION_TESTING
+
+    if [ "$platform" == "ios" ]; then
+      git submodule init
+      git submodule update
+    fi
+
+    cd $original_directory
+    ./build $platform $for_app $build_directory_a $temp_build_path ../temp_build/r1-effects-sdk-android
     rm -r -f temp_build
     ./cucumber $platform $for_app build_regression
 
@@ -40,20 +54,33 @@ write_app()
     ./cucumber $platform $for_app $feature $build_directory_a $build_directory_b
   else
     # apply customization to current build
-    echo "Modifying $for_app for crop selection"
-    sed "s/QA_LINE_A/$QA_LINE_A/g" "automation/AppDelegateTemplate.m" > "automation/AppDelegateTemplateB.m"
+    if [ "$platform" == "ios" ]; then
+      echo "Modifying $for_app for line A customization"
+      sed "s/QA_LINE_A/$QA_LINE_A/g" "automation/AppDelegateTemplate.m" > "automation/AppDelegateTemplateB.m"
 
-    echo "Modifying $for_app for effects selection"
-    cp $build_directory_a/$for_app/AppDelegate.m AppDelegate.m
-    sed "s/QA_LINE_B/$QA_LINE_B/g" "automation/AppDelegateTemplateB.m" > $build_directory_a/$for_app/AppDelegate.m
-    rm "automation/AppDelegateTemplateB.m"
-  
+      echo "Modifying $for_app for line B customization"
+      cp $build_directory_a/$for_app/AppDelegate.m AppDelegate.m
+      sed "s/QA_LINE_B/$QA_LINE_B/g" "automation/AppDelegateTemplateB.m" > $build_directory_a/$for_app/AppDelegate.m
+      rm "automation/AppDelegateTemplateB.m"
+    else
+        echo "Modifying demo for crop selection"
+        sed "s/QA_LINE_A/R1PhotoEffectsSDK.$QA_LINE_A/g" automation/MainActivityTemplate.java > automation/MainActivityTemplateB.java
+        echo "Modifying demo for effects selection"
+        cp $build_directory_a/src/com/example/qa_demo/MainActivity.java MainActivity.java
+        sed "s/QA_LINE_B/$QA_LINE_B/g" automation/MainActivityTemplateB.java > $build_directory_a/src/com/example/qa_demo/MainActivity.java
+        rm automation/MainActivityTemplateB.java
+      fi
     # rebuild the app only
     ./cucumber $platform $for_app $feature $build_directory_a
 
     # cleanup appdelegate
-    mv AppDelegate.m $build_directory_a/$for_app/AppDelegate.m
-    rm -f AppDelegate.m
+    if [ "$platform" == "ios" ]; then
+      mv AppDelegate.m $build_directory_a/$for_app/AppDelegate.m
+      rm -f AppDelegate.m
+    else
+      mv MainActivity.java $build_directory_a/src/com/example/qa_demo/MainActivity.java
+      rm -f MainActivity.java
+    fi
 
   fi
 }
