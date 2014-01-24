@@ -11,6 +11,7 @@ build_directory_c=$5
 
 original_directory=($(pwd))
 
+echo "Checking for device connection"
 udid=($(./identify_udid $platform))
 
 clean_all(){
@@ -35,6 +36,8 @@ else
     fi
     clean_all
     android update project --target "android-17" --path .
+    echo "android.library=true" >> project.properties
+
     ant clean release
   fi
   cd $original_directory
@@ -54,8 +57,8 @@ else
     else
       android update project --target "android-17" --path . --library $build_directory_c
     fi
-    ant debug
-    adb install -r bin/*.apk
+    ant clean debug
+    adb install -r bin/*debug.apk
   fi
   cd $original_directory
 fi

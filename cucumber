@@ -34,8 +34,8 @@ else
   feature=($(echo $feature | awk '{print tolower($0)}'))
   if [[ ! -f "features/$feature.feature" && $feature != "all" ]]; then
     echo "The feature you specified does not have a .feature file associated with it."
-    echo "Feature files should be created in the features directory."
     echo "Scenarios for a feature called 'crop' should be written in features/crop.feature"
+    echo "Steps should be written in features/step_definitions/crop_steps.rb"
     exit
   fi
 fi

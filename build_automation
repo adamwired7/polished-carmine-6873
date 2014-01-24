@@ -27,17 +27,12 @@ write_app()
 
   if [ "$VERSION_TESTING" != "" ]; then
     # clone git repo and checkout older build
-    [ ! -d temp_build ] || rm -r -f temp_build
     cd $build_directory_a
+    [ ! -d temp_build ] || rm -r -f temp_build
 
     git clone git@github.com:radiumone/r1-effects-sdk-$platform.git temp_build
-    mv temp_build $build_directory_a/
-    cd $build_directory_a
-    mv temp_build ../
-    cd ..
-
     cd temp_build
-    temp_build_path=($(pwd))
+
     git checkout $VERSION_TESTING
 
     if [ "$platform" == "ios" ]; then
@@ -46,8 +41,13 @@ write_app()
     fi
 
     cd $original_directory
-    ./build $platform $for_app $build_directory_a $temp_build_path ../temp_build/r1-effects-sdk-android
+
+    ./build $platform $for_app $build_directory_a $build_directory_a/temp_build ../temp_build/r1-effects-sdk-$platform
+    
+    cd $build_directory_a
     rm -r -f temp_build
+
+    cd $original_directory
     ./cucumber $platform $for_app build_regression
 
     # rebuild the sdk
@@ -87,6 +87,6 @@ write_app()
 
 write_app "$for_version" "$qa_line_a" "$qa_line_b" "$feature"
 
-if [ "$cucumber_errors" -gt 0 ]; then
+if [ $? -gt 0 ]; then
   exit 1
 fi

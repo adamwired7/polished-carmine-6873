@@ -4,7 +4,7 @@
 # January 2014
 
 set -e
-app_directory=../../ios-sdk
+app_directory=../
 sdk_directory=$app_directory
 
 

@@ -177,31 +177,33 @@ class Fly_Cucumber
   def match_scenario_steps test_data
     if test_data['setup']['scenario_line'].length > 4
       test_data['setup']['step_line_file'] = "features/step_definitions/#{test_data['setup']['feature']}_steps.rb"
-      feature_steps = File.new(test_data['setup']['step_line_file'],"r")
-      found_line = false
-      line_count = 1
-      while (test_data['setup']['step_line'] = feature_steps.gets)
-        quotation = identify_quotations_in test_data['setup']['step_line']
-        step_title = test_data['setup']['step_line'].split(quotation)[1]
-        if !step_title.nil? && step_title.length > 4
-          has_given_when_then = false
-          has_given_when_then = does_step_title_have_keywords test_data, step_title
-          if has_given_when_then
-            puts "    -- #{test_data['setup']['scenario_line']}"
-            words = test_data['setup']['scenario_line'].split(" ")
-            words.shift
-            identify_step_regex_values_from words, step_title.split(" "), test_data
-            test_data["setup"]["line_count"] = 0
-            test_data["setup"]["function_count"] = test_data["setup"]["function_count"] + 1
-            test_data["results"]["step_count"] = test_data["results"]["step_count"] + 1
-            found_line = true
+      if File.exist?(test_data['setup']['step_line_file'])
+        feature_steps = File.new(test_data['setup']['step_line_file'],"r")
+        found_line = false
+        line_count = 1
+        while (test_data['setup']['step_line'] = feature_steps.gets)
+          quotation = identify_quotations_in test_data['setup']['step_line']
+          step_title = test_data['setup']['step_line'].split(quotation)[1]
+          if !step_title.nil? && step_title.length > 4
+            has_given_when_then = false
+            has_given_when_then = does_step_title_have_keywords test_data, step_title
+            if has_given_when_then
+              puts "    -- #{test_data['setup']['scenario_line']}"
+              words = test_data['setup']['scenario_line'].split(" ")
+              words.shift
+              identify_step_regex_values_from words, step_title.split(" "), test_data
+              test_data["setup"]["line_count"] = 0
+              test_data["setup"]["function_count"] = test_data["setup"]["function_count"] + 1
+              test_data["results"]["step_count"] = test_data["results"]["step_count"] + 1
+              found_line = true
+            end
           end
+          test_data['setup']['step_line_count'] = line_count
+          write_test_function_to_executable_file test_data
+          line_count = line_count + 1
         end
-        test_data['setup']['step_line_count'] = line_count
-        write_test_function_to_executable_file test_data
-        line_count = line_count + 1
+        feature_steps.close
       end
-      feature_steps.close
       if !found_line && ( test_data["setup"]["temp_scenario_count"] > 0 )
         puts "    * #{test_data['setup']['scenario_line']} [ Pending ]"
         test_data["results"]["undefined"].push test_data["setup"]["scenario_line"]
@@ -360,14 +362,15 @@ class Fly_Cucumber
     res=%x(#{cmdb})
     cmdb="grep -i 'Errors:' #{@results_data_output} | cut -d' ' -f 9"
     resb=%x(#{cmdb})
+    errors_and_failures = Array.new
     if res[0].to_i == 0 && resb.to_i == 0
       puts "    <<PASS>>"
     else
       puts "    <<FAIL>>"
       if res[0].to_i > 0
-        errors_and_failures = parse_results "Failure in"
+        errors_and_failures = errors_and_failures.push (parse_results "Failure in")
       else
-        errors_and_failures = parse_results "Error in"
+        errors_and_failures = errors_and_failures.push (parse_results "Error in")
       end
       save_run_failures errors_and_failures, test_data
     end
