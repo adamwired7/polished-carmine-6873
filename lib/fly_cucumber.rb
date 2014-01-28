@@ -394,6 +394,9 @@ class Fly_Cucumber
   def create_metadata results_directory, test_time, errors_and_failures, test_data
     target = File.open("#{results_directory}/meta.xml", 'w')
     target.write('<?xml version="1.0" encoding="UTF-8" ?>')
+    if errors_and_failures.empty?
+      errors_and_failures = ""
+    end
     target.write("<test name='#{test_data['setup']['feature']} | #{test_data['setup']['scenario_title']} | #{test_data['setup']['scenario_line']}' date='#{test_time}' errors='#{errors_and_failures}'>")
     #    target.write("</test>")
     target.close()
