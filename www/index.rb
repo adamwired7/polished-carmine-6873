@@ -32,19 +32,66 @@ class TestSuite
     html_str = html_str + "<head>\n"
     html_str = html_str + "<link href=\"./css/style.css\" rel=\"Stylesheet\" type=\"text/css\"/>\n"
     html_str = html_str + "</head>\n<body>\n"
+    html_str = html_str + "<div id=\"mainbox\">\n"
+
+    #
+    # left column
+    #
     html_str = html_str + "<div id=\"left-column\">\n"
-    html_str = html_str + "<div class='tname_small'>Demo Portrait Gallery: automation/tests/1383774602 apply no crop and no effects.js @ 2013-12-11T00:43:43+00:00 - 1 Total</div>\n"
     self.tests.each do |test|
-      html_str = html_str + "<div class='tname_small'>#{test.name} @ #{DateTime.strptime(test.date,'%s')} - #{self.tests.count} Total</div>\n"
+      begin
+        if test.errors.length > 0
+          error_style = "style='color: #FA8072;'"
+          error_txt   = "<span style='color:#FA8072;'>\n"
+          error_txt   = error_txt + "#{test.parse}"
+          error_txt   = error_txt + "</span>"
+        end
+      rescue => e
+        puts e.message
+      end
+      html_str = html_str + "<div class='tname_small' >#{test.name} @ #{DateTime.strptime(test.date,'%s')} - #{self.tests.count} Total #{error_txt}</div>\n"
+      test.files.each do |file|
+        error_border = ''
+        test.parsed_errors.each {|s|
+          if file.to_s =~ /(#{s})/
+            error_border = 'border: 1px #FA8072 solid;'
+          end
+        } 
+        html_str = html_str + "<div style='float: left; padding: 1px;#{error_border}'>\n"
+        html_str = html_str + "<img src='./runs/#{self.udid}/#{test.id}/#{file}' width='27' height='54'>\n"
+        html_str = html_str + "</div>\n"
+      end
     end
     html_str = html_str + "</div>\n"
 
+    # 
+    # right column
+    #
+    html_str = html_str + "<div id=\"right-column\">\n"
     self.tests.each do |test|
+      begin
+        if test.errors.length > 0
+          error_style = "style='color: #FA8072;'"
+          error_txt   = "<span style='color:#FA8072;'>\n"
+          error_txt   = error_txt + "#{test.parse}"
+          error_txt   = error_txt + "</span>"
+        end
+      rescue => e
+        puts e.message
+      end
       html_str = html_str + "<div style='padding: 1px;'>\n"
-      html_str = html_str + "<h3>#{test.name} @ #{DateTime.strptime(test.date,'%s')} - #{self.tests.count} Total</h3>\n"
+      html_str = html_str + "<h3>#{test.name} @ #{DateTime.strptime(test.date,'%s')} - #{self.tests.count} Total</h3>\n<h4>#{error_txt}</h4>"
       test.files.each do |file|
-        html_str = html_str + "<div style='float: left; padding: 5px;'>\n"
-        html_str = html_str + "<img src='./runs/#{self.udid}/#{test.id}/#{file}' width='224' height='403'>\n"
+        error_border = ''
+        test.parsed_errors.each {|s|
+          if file.to_s =~ /(#{s})/
+            error_border = 'border: 1px #FA8072 solid;'
+          else 
+            error_border = 'border: 1px black solid;'
+          end
+        } 
+        html_str = html_str + "<div class='image_box' style='float: left; margin: 2px; padding: 5px;'>\n"
+        html_str = html_str + "<img src='./runs/#{self.udid}/#{test.id}/#{file}' width='224' height='403' style='#{error_border}'>\n"
         html_str = html_str + "<p>#{parse_test_name(file.to_s)}</p>\n"
         html_str = html_str + "</div>\n"
       end
@@ -53,6 +100,8 @@ class TestSuite
       html_str = html_str + "<div class='container'></div>\n"
       html_str = html_str + "\n\n"
     end
+    html_str = html_str + "</div>\n"
+    html_str = html_str + "</div>\n"
     html_str = html_str + "</body>\n</html>"
 
     html_str
@@ -60,7 +109,7 @@ class TestSuite
 end
 
 class Testfolder
-  attr_accessor :id, :meta, :name, :date, :errors, :files
+  attr_accessor :id, :meta, :name, :date, :errors, :files, :parsed_errors
   def initialize(params)
     self.id = params[:id]
     self.meta = params[:meta]
@@ -68,6 +117,25 @@ class Testfolder
     self.date = params[:date]
     self.errors = params[:errors]
     self.files = params[:files]
+    self.parsed_errors = Array.new
+  end
+  
+  def parse
+    self.errors = self.errors.gsub("[\"","")
+    self.errors = self.errors.gsub("\"]","")
+    a_errors = self.errors.split("\\n")
+
+    begin
+      a_errors.each do |s_error|
+        puts s_error
+        a_tmp = s_error.split(/Fail: /)
+          self.parsed_errors << a_tmp[1]
+      end
+    rescue => e
+      puts e.message
+    end
+    
+    "#{a_errors.count} error(s) : #{self.parsed_errors.join(" ")}"
   end
 end
 
