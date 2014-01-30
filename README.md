@@ -53,7 +53,8 @@ Here's a real example:
           target.frontMostApp().mainWindow().buttons()["Launch SDK"].tap();
      });
      
-The button object can be easily identified with the "record" tool at the bottom of the GUI in Instruments Automation.  
+The button object can be easily identified with the "record" tool at the bottom of the GUI in Instruments Automation.
+PLaying a flow in Instruments with `target.logElementTree();` included will record every object within the target application at that particular time and display it within a tree.  Most objects have a name and value.  Both the value and name can be useful for validations.
 
 *Given*, *When*, and *Then* are all interchangeable with respect to the syntax, though each carry their own literal value.  Step definitions for *And* steps should be created with the *Given*, *When*, or *Then* that they correspond to.
 
