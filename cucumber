@@ -40,6 +40,7 @@ else
   fi
 fi
 
+echo "Checking for device connection..."
 udid=($(./identify_udid $platform))
 
 echo "Starting automation for $for_app on $udid"
