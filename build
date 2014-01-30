@@ -12,7 +12,7 @@ build_directory_c=$5
 original_directory=($(pwd))
 
 echo "Checking for device connection"
-udid=($(./identify_udid $platform))
+udid=($(./lib/identify_udid $platform))
 
 clean_all(){
   if [ -f build.xml ]; then

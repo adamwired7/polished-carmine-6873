@@ -1,1 +1,0 @@
-  expect_visible(target.frontMostApp().mainWindow().buttons()["Launch SDK"]);
