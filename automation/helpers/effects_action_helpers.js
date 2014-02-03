@@ -4,6 +4,7 @@ function givenWhenThen(title,commands){
   UIALogger.logMessage(title);
   commands();
   var revisedTitle = title.replace(/ /g,"_");
+  target.delay(1);
   target.captureScreenWithName(date_capture()+revisedTitle);
 }
 
