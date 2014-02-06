@@ -8,8 +8,8 @@ This project leverages Behavior Driven Development (BDD) for ios automation test
 
 ### How-To
 
-`./cucumber ios APP_NAME feature_or_all optional_app_directory optional_sdk_directory` will run the script for all features outlined in the features directory.  The command requires the app name.  Debug access to the app is required.
-`./cucumber android APP_NAME feature_or_all optional_app_directory optional_sdk_directory optional_android_relative_sdk_path_from_application` should be used for android.
+`./c2go ios APP_NAME feature_or_all optional_app_directory optional_sdk_directory` will run the script for all features outlined in the features directory.  The command requires the app name.  Debug access to the app is required.
+`./c2go android APP_NAME feature_or_all optional_app_directory optional_sdk_directory optional_android_relative_sdk_path_from_application` should be used for android.
 
 ### Setup
 
