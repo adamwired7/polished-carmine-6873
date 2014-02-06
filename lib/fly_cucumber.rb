@@ -381,6 +381,7 @@ class Fly_Cucumber
   def run_test test_data
     test_time = Time.new().to_i
     results_directory = "#{@results_media_directory}/#{test_time}"
+    %x([ -d "www/runs" ] || mkdir "www/runs")
     %x([ -d #{@results_media_directory} ] || mkdir #{@results_media_directory})
     %x(mkdir #{results_directory})
 
