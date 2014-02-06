@@ -48,10 +48,10 @@ write_app()
     rm -r -f temp_build
 
     cd $original_directory
-    ./cucumber $platform $for_app build_regression
+    ./c2go $platform $for_app build_regression
 
     # rebuild the sdk
-    ./cucumber $platform $for_app $feature $build_directory_a $build_directory_b
+    ./c2go $platform $for_app $feature $build_directory_a $build_directory_b
   else
     # apply customization to current build
     if [ "$platform" == "ios" ]; then
@@ -71,7 +71,7 @@ write_app()
         rm automation/MainActivityTemplateB.java
       fi
     # rebuild the app only
-    ./cucumber $platform $for_app $feature $build_directory_a
+    ./c2go $platform $for_app $feature $build_directory_a
 
     # cleanup appdelegate
     if [ "$platform" == "ios" ]; then
