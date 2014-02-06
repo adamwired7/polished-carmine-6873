@@ -2,10 +2,7 @@ automation/data/*
 automation/data
 www/runs/*
 www/*.html
-automation/r1_photo_effects.trace/*
-automation/r1_photo_effects.trace/form.template
 automation/bin
- *.trace
 *.run
 effects.txt
 effectScript.js
