@@ -10,6 +10,8 @@ class Fly_Cucumber
     @results_data_output = "#{@lib_directory}/effects.txt"
     @results_media_directory = "www/runs/#{@udid}"
     @application_name = application_name
+    
+    here3
 
     #ios configuration
     @instruments_script = "#{@lib_directory}/effectScript.js"
@@ -448,3 +450,6 @@ end
 
 run_tests = Fly_Cucumber.new(ARGV[0],ARGV[1],ARGV[2],ARGV[3])
 run_tests.test_handler
+
+    
+    here4
